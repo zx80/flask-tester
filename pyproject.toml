@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "FlaskTester"
+version = "0.9"
+authors = [ { name = "Fabien Coelho", email = "flask.tester@coelho.net" } ]
+description = "Pytest fixtures for Flask authenticated internal and external tests"
+readme = "README.md"
+license = { text = "CC0" }
+requires-python = ">=3.10"
+dependencies = [
+  "requests",
+  "flask",
+  "pytest"
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+  "Programming Language :: Python",
+  "Environment :: Web Environment",
+  "Framework :: Flask",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+[project.urls]
+repository = "https://github.com/zx80/flask-tester"
+documentation = "https://zx80.github.io/flask-tester/"
+issues = "https://github.com/zx80/flask-tester/issues"
+package = "https://pypi.org/project/FlaskTester/"
+
+[project.optional-dependencies]
+# various dev tools
+dev = ["mypy", "pyright", "ruff", "coverage", "pymarkdownlnt!=0.9.5", "build", "twine", "wheel", "types-flask", "types-requests", "FlaskSimpleAuth", "passlib"]
+# documentation generation
+doc = ["sphinx", "sphinx_rtd_theme", "sphinx-autoapi", "sphinx-lint"]
+
+[tool.setuptools]
+py-modules = [ "FlaskTester" ]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]

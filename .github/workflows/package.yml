@@ -1,0 +1,36 @@
+name: FlaskTester Package
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+    # Setup
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    # Dependencies
+    - name: Install Python Dependencies
+      run: |
+        pip install -U pip
+        pip install -e .[dev,doc]
+    # Checks
+    - name: Check with pyright
+      run: make VENV= check.pyright
+    - name: Check with ruff
+      run: make VENV= check.ruff
+    - name: Check with pytest
+      run: make VENV= check.pytest
+    # - name: Check with coverage
+    #   run: make VENV= check.coverage
+    - name: Check with pymarkdown
+      run: make VENV= check.docs
