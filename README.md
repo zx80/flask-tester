@@ -94,7 +94,6 @@ The implementation of these fixtures is based on five classes:
 
   The path is relative to the URL provided to the constructor.
 
-
 ## TODO
 
 - API documentation generation
