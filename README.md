@@ -14,7 +14,7 @@ The package provides two fixtures:
 - `ft_authenticator` for app authentication, which depends on two environment variables:
 
   - `FLASK_TESTER_ALLOW` space-separated list of allowed authentication schemes.
-  - `FLASK_TESTER_AUTH` comma-separated list of login:password credentials.
+  - `FLASK_TESTER_AUTH` comma-separated list of _login:password_ credentials.
 
 - `ft_client` for app testing, which depends on the previous fixture, plus environment
   variables which allow to find the application, at least one must be defined.
@@ -73,8 +73,10 @@ The implementation of these fixtures is based on four classes:
 
 ## TODO
 
-- documentation generation
+- API documentation generation
 - coverage tests
+- useless but decorative badges
+- pypi distribution
 
 ## Versions
 

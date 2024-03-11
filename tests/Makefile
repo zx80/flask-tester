@@ -17,7 +17,7 @@ PYTOPT  =
 check.external:
 	source $(VENV)/bin/activate
 	flask run --port=$(PORT) &
-	flask_pid=$$?
+	flask_pid=$$!
 	sleep $(SLEEP)
 	export FLASK_TESTER_URL="http://localhost:$(PORT)"
 	$(PYTEST) $(PYTOPT) test.py
