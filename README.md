@@ -19,6 +19,7 @@ The package provides two fixtures:
 - `ft_client` for app testing, which depends on the previous fixture, plus environment
   variables which allow to find the application, at least one must be defined.
 
+  - `FLASK_TESTER_DEFAULT` default login for authentication.
   - `FLASK_TESTER_URL` URL of the running application for external tests.
   - `FLASK_TESTER_APP` package (filename with `.py`) to be imported for the application.
     - the application is expected to be named `app`
@@ -80,6 +81,10 @@ The implementation of these fixtures is based on four classes:
 
 ## Versions
 
-### 0.9 on ?
+### 0.10 on ?
+
+Add `FLASK_TESTER_DEFAULT` environment configuration to `ft_client`.
+
+### 0.9 on 2024-03-11
 
 Initial revision extracted from a separate project.

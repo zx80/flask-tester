@@ -345,7 +345,7 @@ class FlaskClient(Client):
 
 @pytest.fixture
 def ft_authenticator():
-    allow = os.environ["FLASK_TESTER_ALLOW"].split(" ") if "FLASK_TESTER_ALLOW" in os.environ else ["bearer", "basic", "param"]
+    allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param").split(" ")
     auth = Authenticator(allow)
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
@@ -354,10 +354,11 @@ def ft_authenticator():
 
 @pytest.fixture
 def ft_client(ft_authenticator):
+    default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
     if "FLASK_TESTER_URL" in os.environ:
         app_url = os.environ["FLASK_TESTER_URL"]
-        client = RequestClient(ft_authenticator, app_url)
+        client = RequestClient(ft_authenticator, app_url, default_login)
     elif "FLASK_TESTER_APP" in os.environ:
         pkg_name = os.environ["FLASK_TESTER_APP"]
         pkg = importlib.import_module(pkg_name)
@@ -367,7 +368,7 @@ def ft_client(ft_authenticator):
             app = getattr(pkg, "create_app")()
         else:
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
-        client = FlaskClient(ft_authenticator, app.test_client())
+        client = FlaskClient(ft_authenticator, app.test_client(), default_login)
     else:
         raise FlaskTesterError("no Flask application to test")
     yield client
