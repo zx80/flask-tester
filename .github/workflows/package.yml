@@ -20,6 +20,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     # Dependencies
     - name: Install Python Dependencies
+    #  run: make VENV= venv
       run: |
         pip install -U pip
         pip install -e .[dev,doc]
@@ -30,7 +31,7 @@ jobs:
       run: make VENV= check.ruff
     - name: Check with pytest
       run: make VENV= check.pytest
-    # - name: Check with coverage
-    #   run: make VENV= check.coverage
+    - name: Check with coverage
+      run: make VENV= check.coverage
     - name: Check with pymarkdown
       run: make VENV= check.docs
