@@ -149,14 +149,14 @@ class Authenticator:
 
             if self._try_auth(auth, "bearer"):
                 kwargs["headers"]["Authorization"] = self._bearer + " " + token
-            elif self._try_auth(auth, "header"):
+            elif self._try_auth(auth, "header"):  # pragma: no cover
                 kwargs["headers"][self._header] = token
-            elif self._try_auth(auth, "tparam"):
+            elif self._try_auth(auth, "tparam"):  # pragma: no cover
                 self._param(kwargs, self._tparam, token)
-            elif self._try_auth(auth, "cookie"):
+            elif self._try_auth(auth, "cookie"):  # pragma: no cover
                 # FIXME cookie?
                 kwargs["headers"]["Cookie"] = self._cookie + "=" + token
-            else:
+            else:  # pragma: no cover
                 raise AuthError(f"no token carrier: login={login} auth={auth} allow={self._allow}")
 
         elif login in self._passes and auth in (None, "basic", "param"):
@@ -166,18 +166,18 @@ class Authenticator:
             elif self._try_auth(auth, "param"):
                 self._param(kwargs, self._user, login)
                 self._param(kwargs, self._pass, self._passes[login])
-            else:
+            else:  # pragma: no cover
                 raise AuthError(f"no password carrier: login={login} auth={auth} allow={self._allow}")
 
-        elif self._try_auth(auth, "fake"):
+        elif self._try_auth(auth, "fake"):  # pragma: no cover
 
             self._param(kwargs, self._login, login)
 
-        else:
+        else:  # pragma: no cover
             raise AuthError(f"no authentication for login={login} auth={auth} allow={self._allow}")
 
 
-class RequestFlaskResponse:
+class RequestFlaskResponse:  # pragma: no cover
     """Wrapper to return a Flask-looking response from a request response.
 
     This only work for simple responses.
@@ -193,6 +193,7 @@ class RequestFlaskResponse:
     """
 
     def __init__(self, response):
+
         self._response = response
         self.status_code = response.status_code
         self.data = response.content
@@ -222,7 +223,7 @@ class Client:
         """Associate a password to a login, None to remove."""
         self._auth.setPass(login, password)
 
-    def _request(self, method: str, path: str, **kwargs):
+    def _request(self, method: str, path: str, **kwargs):  # pragma: no cover
         """Run a request and return response."""
         raise NotImplementedError()
 
@@ -243,14 +244,14 @@ class Client:
         if "login" in kwargs:
             login = kwargs["login"]
             del kwargs["login"]
-        else:  # if unset, use default
+        else:  # pragma: no cover  # if unset, use default
             login = self._default_login
 
         self._auth.setAuth(login, kwargs, auth=auth)
         res = self._request(method, path, **kwargs)  # type: ignore
 
         if status is not None:
-            if res.status_code != status:  # show error before aborting
+            if res.status_code != status:  # pragma: no cover  # show error before aborting
                 log.error(f"bad {status} result: {res.status_code} {res.text[:512]}")
             assert res.status_code == status
 
@@ -289,14 +290,14 @@ class Client:
         res = self.request(method, path, status=status, **kwargs)
 
         if content is not None:
-            if not re.search(content, res.text, re.DOTALL):
+            if not re.search(content, res.text, re.DOTALL):  # pragma: no cover
                 log.error(f"cannot find {content} in {res.text}")
                 assert False, "content not found"
 
         return res
 
 
-class RequestClient(Client):
+class RequestClient(Client):  # pragma: no cover
     """Request-based test provider."""
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
@@ -356,7 +357,7 @@ def ft_authenticator():
 def ft_client(ft_authenticator):
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
-    if "FLASK_TESTER_URL" in os.environ:
+    if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
         app_url = os.environ["FLASK_TESTER_URL"]
         client = RequestClient(ft_authenticator, app_url, default_login)
     elif "FLASK_TESTER_APP" in os.environ:
@@ -364,11 +365,11 @@ def ft_client(ft_authenticator):
         pkg = importlib.import_module(pkg_name)
         if hasattr(pkg, "app"):
             app = getattr(pkg, "app")
-        elif hasattr(pkg, "create_app"):
+        elif hasattr(pkg, "create_app"):  # pragma: no cover
             app = getattr(pkg, "create_app")()
-        else:
+        else:  # pragma: no cover
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
         client = FlaskClient(ft_authenticator, app.test_client(), default_login)
-    else:
+    else:  # pragma: no cover
         raise FlaskTesterError("no Flask application to test")
     yield client

@@ -20,8 +20,10 @@ assert "FLASK_TESTER_URL" in os.environ or "FLASK_TESTER_APP" in os.environ
 @pytest.fixture
 def api(ft_client):
     # bad password / token
-    ft_client._auth.setPass("moe", "bad password")
-    ft_client._auth.setToken("moe", "bad token")
+    ft_client.setPass("moe", None)
+    ft_client.setToken("moe", None)
+    ft_client.setPass("moe", "bad password")
+    ft_client.setToken("moe", "bad token")
     # get valid tokens using password authn
     res = ft_client.get("/token", login="calvin", auth="basic", status=200)
     assert res.json["user"] == "calvin"
@@ -52,9 +54,16 @@ def test_admin(api):
         api.check("GET", "/admin", 401, login=None, auth=auth)
 
 def test_errors(api):
-    for scheme in ("header", "cookie", "fake", "tparam"):
+    for scheme in ("header", "cookie", "fake", "tparam", "unexpected"):
         try:
             api.get("/token", login="calvin", auth=scheme)
-            assert False, "must raise an exception"
+            assert False, "must raise an exception"  # pragma: no cover
         except ft.AuthError as e:
             assert True, "expected error"
+
+def test_methods(api):
+    api.get("/who-am-i", login="hobbes", status=200)
+    api.post("/who-am-i", login="hobbes", status=405)
+    api.put("/who-am-i", login="hobbes", status=405)
+    api.patch("/who-am-i", login="hobbes", status=405)
+    api.delete("/who-am-i", login="hobbes", status=405)

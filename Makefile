@@ -33,7 +33,7 @@ check.pytest: venv
 
 check.coverage: venv
 	source venv/bin/activate
-	$(MAKE) -C tests coverage
+	$(MAKE) -C tests check.coverage
 
 # MD013: line length
 check.docs:

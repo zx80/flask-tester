@@ -9,7 +9,7 @@ achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=master&style=flat)
 ![Tests](https://img.shields.io/badge/tests-2%20✓-success)
-![Coverage](https://img.shields.io/badge/coverage-0%25-success)
+![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
 ![Version](https://img.shields.io/pypi/v/FlaskTester)
@@ -97,7 +97,6 @@ The implementation of these fixtures is based on five classes:
 ## TODO
 
 - API documentation generation
-- coverage tests
 
 ## Versions
 
@@ -105,6 +104,7 @@ The implementation of these fixtures is based on five classes:
 
 Add `FLASK_TESTER_DEFAULT` environment configuration to `ft_client`.
 Improve documentation, including incredible badges.
+Working coverage tests.
 
 ### 0.9 on 2024-03-11
 

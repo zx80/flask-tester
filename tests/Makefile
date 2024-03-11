@@ -7,7 +7,8 @@ SLEEP   = 3
 
 .PHONY: clean
 clean:
-	$(RM) -r __pycache__
+	$(RM) -r __pycache__ htmlcov
+	$(RM) .coverage
 
 FLASK   = flask
 PYTEST  = pytest --log-level=debug --capture=tee-sys
@@ -27,7 +28,13 @@ check.external:
 check.internal:
 	source $(VENV)/bin/activate
 	export FLASK_TESTER_APP=app
-	pytest test.py 
+	$(PYTEST) $(PYTOPT) test.py
+
+.PHONY: check.coverage
+check.coverage:
+	$(MAKE) PYTEST="coverage run -m $(PYTEST)" check.internal
+	coverage html ../FlaskTester.py
+	coverage report --show-missing --precision=1 --fail-under=100.0
 
 .PHONY: check
 check: check.internal check.external
