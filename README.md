@@ -8,7 +8,7 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=master&style=flat)
-![Tests](https://img.shields.io/badge/tests-2%20✓-success)
+![Tests](https://img.shields.io/badge/tests-3%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
@@ -46,7 +46,7 @@ def api(ft_client):
     # get Calvin's token, assume {"token": "<token-value>"}
     res = ft_client.get("/token", login="calvin", auth="basic", status=200)
     assert res.is_json
-    ft_client._auth.setToken("calvin", res.json["token"])
+    ft_client.setToken("calvin", res.json["token"])
     yield ft_client
 
 def test_app(api):

@@ -8,7 +8,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-# set authn from for ft_authenticator
+# set authn for ft_authenticator
 os.environ.update(
     FLASK_TESTER_ALLOW="bearer basic param",
     FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in app.PASSES.items()),
@@ -47,7 +47,7 @@ def api(ft_client):
 def test_admin(api):
     # check authentication schemes
     for auth in (None, "basic", "param", "bearer"):
-        api.get("/admin", status=200, login="calvin", auth=auth)
+        api.check("GET", "/admin", status=200, login="calvin", auth=auth)
         api.check("GET", "/admin", 200, login="susie", auth=auth)
         api.check("GET", "/admin", 403, login="hobbes", auth=auth)
         api.check("GET", "/admin", 401, login="moe", auth=auth)
