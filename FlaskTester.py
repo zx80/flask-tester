@@ -179,7 +179,7 @@ class Authenticator:
             raise AuthError(f"no authentication for login={login} auth={auth} allow={self._allow}")
 
 
-class RequestFlaskResponse:  # pragma: no cover
+class RequestFlaskResponse:
     """Wrapper to return a Flask-looking response from a request response.
 
     This only work for simple responses.
@@ -205,7 +205,7 @@ class RequestFlaskResponse:  # pragma: no cover
         try:
             self.json = response.json()
             self.is_json = True
-        except Exception:
+        except:
             self.json = None
             self.is_json = False
 
@@ -225,7 +225,7 @@ class Client:
         """Associate a password to a login, None to remove."""
         self._auth.setPass(login, password)
 
-    def _request(self, method: str, path: str, **kwargs):  # pragma: no cover
+    def _request(self, method: str, path: str, **kwargs):
         """Run a request and return response."""
         raise NotImplementedError()
 
@@ -246,7 +246,7 @@ class Client:
         if "login" in kwargs:
             login = kwargs["login"]
             del kwargs["login"]
-        else:  # pragma: no cover  # if unset, use default
+        else:  # pragma: no cover
             login = self._default_login
 
         self._auth.setAuth(login, kwargs, auth=auth)

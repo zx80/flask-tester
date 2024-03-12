@@ -96,14 +96,14 @@ def test_authenticator_token():
         kwargs = {}
         auth.setAuth("dad", kwargs)
         assert False, "must raise an error"  # pragma: no cover
-    except ft.FlaskTesterError as e:
+    except ft.FlaskTesterError:
         assert True, "error raised"
     # rosalyn as a password, but no password carrier is allowed
     try:
         kwargs={}
         auth.setAuth("rosalyn", kwargs)
         assert False, "must raise an error"  # pragma: no cover
-    except ft.FlaskTesterError as e:
+    except ft.FlaskTesterError:
         assert True, "error raised"
 
 def test_authenticator_password():
@@ -134,5 +134,38 @@ def test_authenticator_password():
         kwargs={}
         auth.setAuth("susie", kwargs)
         assert False, "must raise an error"  # pragma: no cover
-    except ft.FlaskTesterError as e:
+    except ft.FlaskTesterError:
+        assert True, "error raised"
+
+def test_request_flask_response():
+
+    class RequestResponse:
+        """Local class for testing RequestFlaskResponse."""
+
+        def __init__(self, is_json: bool):
+            self._is_json = is_json
+            self.status_code = 200
+            self.content = b"hello world!"
+            self.text = "hello world!"
+            self.headers = {"Server": "test/0.1"}
+            self.cookies = {}
+
+        def json(self):
+            if self._is_json:
+                return {"hello": "world!"}
+            else:
+                raise Exception("not json!")
+
+    jres = ft.RequestFlaskResponse(RequestResponse(True))
+    assert jres.is_json and jres.json is not None
+
+    xres = ft.RequestFlaskResponse(RequestResponse(False))
+    assert not xres.is_json and xres.json is None
+
+def test_client():
+    client = ft.Client(ft.Authenticator())
+    try:
+        client._request("GET", "/")
+        assert False, "must raise an error"  # pragma: no cover
+    except NotImplementedError:
         assert True, "error raised"
