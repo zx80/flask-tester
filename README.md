@@ -137,6 +137,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ### ? on ?
 
+Improve coverage tests.
 Add explicit license section and file.
 Add more links about the project.
 
