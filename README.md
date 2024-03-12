@@ -61,6 +61,9 @@ from FlaskTester import ft_authenticator, ft_client
 
 @pytest.fixture
 def api(ft_client):
+    # add test passwords for Calvin and Hobbes (must be consistent with app!)
+    ft_client.setPass("calvin", "clv-pass")
+    ft_client.setPass("hobbes", "hbs-pass")
     # get Calvin's token, assume {"token": "<token-value>"}
     res = ft_client.get("/token", login="calvin", auth="basic", status=200)
     assert res.is_json
