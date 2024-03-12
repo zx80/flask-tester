@@ -348,6 +348,7 @@ class FlaskClient(Client):
 
 @pytest.fixture
 def ft_authenticator():
+    """Pytest Fixture: ft_authenticator."""
     allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param").split(" ")
     # per-scheme parameters, must be consistent with FSA configuration
     user = os.environ.get("FLASK_TESTER_USER", "USER")
@@ -365,6 +366,7 @@ def ft_authenticator():
 
 @pytest.fixture
 def ft_client(ft_authenticator):
+    """Pytest Fixture: ft_client."""
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
     if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
