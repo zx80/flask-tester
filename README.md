@@ -132,6 +132,11 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## Versions
 
+### ? on ?
+
+Add explicit license section and file.
+Add more links about the project.
+
 ### 1.0 on 2024-03-12
 
 Add `FLASK_TESTER_DEFAULT` environment configuration to `ft_client`.
