@@ -115,6 +115,15 @@ The implementation of these fixtures is based on five classes:
   File parameters in `data`, with the format expected by the Flask test client,
   are turned into `files` parameters as expected by `requests`.
 
+## License
+
+This code is public domain.
+
+Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
+sources are available on [GitHub](https://github.com/zx80/flask-tester),
+see also the [documentation](https://zx80.github.io/flask-tester/),
+please report any [issues](https://github.com/zx80/flask-tester/issues).
+
 ## TODO
 
 - API documentation generation
