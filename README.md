@@ -44,6 +44,9 @@ The package provides two fixtures:
   variables which allow to find the application, at least one must be defined:
 
   - `FLASK_TESTER_URL` URL of the running application for external tests.
+
+    The application is expected to be already running when the test is started.
+
   - `FLASK_TESTER_APP` package (filename with `.py`) to be imported for the application.
     - the application is expected to be named `app`
     - if not available, look and call for `create_app`
