@@ -205,7 +205,7 @@ class RequestFlaskResponse:
         try:
             self.json = response.json()
             self.is_json = True
-        except:
+        except Exception:
             self.json = None
             self.is_json = False
 
