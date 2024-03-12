@@ -120,7 +120,7 @@ The implementation of these fixtures is based on five classes:
 This code is public domain.
 
 Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
-sources are available on [GitHub](https://github.com/zx80/flask-tester),
+[sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
