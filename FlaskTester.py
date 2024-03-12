@@ -246,7 +246,7 @@ class Client:
         if "login" in kwargs:
             login = kwargs["login"]
             del kwargs["login"]
-        else:  # pragma: no cover
+        else:
             login = self._default_login
 
         self._auth.setAuth(login, kwargs, auth=auth)

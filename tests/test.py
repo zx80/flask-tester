@@ -19,6 +19,8 @@ assert "FLASK_TESTER_URL" in os.environ or "FLASK_TESTER_APP" in os.environ
 
 @pytest.fixture
 def api(ft_client):
+    # set a default
+    ft_client._default_login = "calvin"
     # bad password / token
     ft_client.setPass("moe", None)
     ft_client.setToken("moe", None)
@@ -41,6 +43,15 @@ def api(ft_client):
     assert res.json["user"] == "hobbes"
     res = ft_client.get("/who-am-i", login="susie", status=200, auth="bearer")
     assert res.json["user"] == "susie"
+    # with defaults
+    res = ft_client.get("/who-am-i", auth="basic", status=200)
+    assert res.json["user"] == "calvin"
+    res = ft_client.get("/who-am-i", auth="param", status=200)
+    assert res.json["user"] == "calvin"
+    res = ft_client.get("/who-am-i", auth="bearer", status=200)
+    assert res.json["user"] == "calvin"
+    res = ft_client.get("/who-am-i", status=200)
+    assert res.json["user"] == "calvin"
     # add a bad password
     yield ft_client
 
