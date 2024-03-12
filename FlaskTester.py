@@ -358,6 +358,7 @@ def ft_authenticator():
     header = os.environ.get("FLASK_TESTER_HEADER", "Auth")
     cookie = os.environ.get("FLASK_TESTER_COOKIE", "auth")
     tparam = os.environ.get("FLASK_TESTER_TPARAM", "AUTH")
+    # create authenticator, possibly with initial credentials
     auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer, header=header, cookie=cookie, tparam=tparam)
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
