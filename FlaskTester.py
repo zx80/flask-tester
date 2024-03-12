@@ -7,7 +7,7 @@ import logging
 import pytest
 
 log = logging.getLogger("flask_tester")
-log.setLevel(level=logging.DEBUG)
+# log.setLevel(level=logging.DEBUG)
 
 class FlaskTesterError(BaseException):
     pass
@@ -88,6 +88,7 @@ class Authenticator:
             if login in store:
                 del store[login]
         else:
+            assert isinstance(val, str)
             store[login] = val
 
     def setPass(self, login: str, pw: str|None):
@@ -347,7 +348,15 @@ class FlaskClient(Client):
 @pytest.fixture
 def ft_authenticator():
     allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param").split(" ")
-    auth = Authenticator(allow)
+    # per-scheme parameters, must be consistent with FSA configuration
+    user = os.environ.get("FLASK_TESTER_USER", "USER")
+    pwd = os.environ.get("FLASK_TESTER_PASS", "PASS")
+    login = os.environ.get("FLASK_TESTER_LOGIN", "LOGIN")
+    bearer = os.environ.get("FLASK_TESTER_BEARER", "Bearer")
+    header = os.environ.get("FLASK_TESTER_HEADER", "Auth")
+    cookie = os.environ.get("FLASK_TESTER_COOKIE", "auth")
+    tparam = os.environ.get("FLASK_TESTER_TPARAM", "AUTH")
+    auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer, header=header, cookie=cookie, tparam=tparam)
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
     yield auth 

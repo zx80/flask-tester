@@ -20,21 +20,36 @@ achieved through environment variables.
 
 The package provides two fixtures:
 
-- `ft_authenticator` for app authentication, which depends on two environment variables:
+- `ft_authenticator` for app authentication, which depends on environment variables:
 
-  - `FLASK_TESTER_ALLOW` space-separated list of allowed authentication schemes.
+  - `FLASK_TESTER_ALLOW` space-separated list of allowed authentication schemes,
+    default is `["bearer", "basic", "param"]`.
   - `FLASK_TESTER_AUTH` comma-separated list of _login:password_ credentials.
+  - `FLASK_TESTER_USER` user login parameter for `param` password authentication,
+    default is `USER`.
+  - `FLASK_TESTER_PASS` user password parameter for `param` password authentication,
+    default is `PASS`.
+  - `FLASK_TESTER_LOGIN` user login parameter for `fake` authentication,
+    default is `LOGIN`.
+  - `FLASK_TESTER_TPARAM` token parameter for `tparam` token authentication,
+    default is `AUTH`.
+  - `FLASK_TESTER_BEARER` bearer scheme for `bearer` token authentication,
+    default is `Bearer`.
+  - `FLASK_TESTER_HEADER` header name for for `header` token authentication,
+    default is `Auth`.
+  - `FLASK_TESTER_COOKIE` cookie name for for `cookie` token authentication,
+    default is `auth`.
 
 - `ft_client` for app testing, which depends on the previous fixture, plus environment
-  variables which allow to find the application, at least one must be defined.
+  variables which allow to find the application, at least one must be defined:
 
-  - `FLASK_TESTER_DEFAULT` default login for authentication.
   - `FLASK_TESTER_URL` URL of the running application for external tests.
   - `FLASK_TESTER_APP` package (filename with `.py`) to be imported for the application.
     - the application is expected to be named `app`
     - if not available, look and call for `create_app`
 
-  The authenticator is available as `_auth` in the client fixture.
+  Moreover:
+  - `FLASK_TESTER_DEFAULT` default login for authentication, default is _None_.
 
 ```python
 import os
@@ -94,15 +109,20 @@ The implementation of these fixtures is based on five classes:
 
   The path is relative to the URL provided to the constructor.
 
+  File parameters in `data`, with the format expected by the Flask test client,
+  are turned into `files` parameters as expected by `requests`.
+
 ## TODO
 
 - API documentation generation
+- control logging level
 
 ## Versions
 
-### 0.10 on ?
+### 1.0 on 2024-03-12
 
 Add `FLASK_TESTER_DEFAULT` environment configuration to `ft_client`.
+Add `FLASK_TESTER_*` environment configurations to `ft_authenticator.
 Improve documentation, including incredible badges.
 Working coverage tests.
 
