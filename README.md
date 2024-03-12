@@ -116,6 +116,7 @@ The implementation of these fixtures is based on five classes:
 
 - API documentation generation
 - control logging level
+- improve actual coverage
 
 ## Versions
 
