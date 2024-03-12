@@ -150,14 +150,14 @@ class Authenticator:
 
             if self._try_auth(auth, "bearer"):
                 kwargs["headers"]["Authorization"] = self._bearer + " " + token
-            elif self._try_auth(auth, "header"):  # pragma: no cover
+            elif self._try_auth(auth, "header"):
                 kwargs["headers"][self._header] = token
-            elif self._try_auth(auth, "tparam"):  # pragma: no cover
+            elif self._try_auth(auth, "tparam"):
                 self._param(kwargs, self._tparam, token)
-            elif self._try_auth(auth, "cookie"):  # pragma: no cover
+            elif self._try_auth(auth, "cookie"):
                 # FIXME cookie?
                 kwargs["headers"]["Cookie"] = self._cookie + "=" + token
-            else:  # pragma: no cover
+            else:
                 raise AuthError(f"no token carrier: login={login} auth={auth} allow={self._allow}")
 
         elif login in self._passes and auth in (None, "basic", "param"):
@@ -167,14 +167,15 @@ class Authenticator:
             elif self._try_auth(auth, "param"):
                 self._param(kwargs, self._user, login)
                 self._param(kwargs, self._pass, self._passes[login])
-            else:  # pragma: no cover
+            else:
                 raise AuthError(f"no password carrier: login={login} auth={auth} allow={self._allow}")
 
-        elif self._try_auth(auth, "fake"):  # pragma: no cover
+        elif self._try_auth(auth, "fake"):
 
             self._param(kwargs, self._login, login)
 
-        else:  # pragma: no cover
+        else:
+
             raise AuthError(f"no authentication for login={login} auth={auth} allow={self._allow}")
 
 

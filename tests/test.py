@@ -67,3 +67,72 @@ def test_methods(api):
     api.put("/who-am-i", login="hobbes", status=405)
     api.patch("/who-am-i", login="hobbes", status=405)
     api.delete("/who-am-i", login="hobbes", status=405)
+
+def test_authenticator_token():
+    # all token carriers
+    auth = ft.Authenticator(allow=["bearer", "header", "tparam", "cookie"])
+    auth.setToken("calvin", "clv-token")
+    auth.setToken("susie", "ss-token")
+    auth.setToken("hobbes", "hbs-token")
+    auth.setToken("moe", "m-token")
+    auth.setPass("rosalyn", "rsln-pass")
+    kwargs = {}
+    auth.setAuth("calvin", kwargs, auth="bearer")
+    assert kwargs["headers"]["Authorization"] == "Bearer clv-token"
+    kwargs = {}
+    auth.setAuth("susie", kwargs, auth="header")
+    assert kwargs["headers"]["Auth"] == "ss-token"
+    kwargs = {"data": {}}
+    auth.setAuth("hobbes", kwargs, auth="tparam")
+    assert kwargs["data"]["AUTH"] == "hbs-token"
+    kwargs = {"json": {}}
+    auth.setAuth("hobbes", kwargs, auth="tparam")
+    assert kwargs["json"]["AUTH"] == "hbs-token"
+    kwargs = {}
+    auth.setAuth("moe", kwargs, auth="cookie")
+    assert kwargs["headers"]["Cookie"] == "auth=m-token"
+    # dad does not have a token
+    try:
+        kwargs = {}
+        auth.setAuth("dad", kwargs)
+        assert False, "must raise an error"  # pragma: no cover
+    except ft.FlaskTesterError as e:
+        assert True, "error raised"
+    # rosalyn as a password, but no password carrier is allowed
+    try:
+        kwargs={}
+        auth.setAuth("rosalyn", kwargs)
+        assert False, "must raise an error"  # pragma: no cover
+    except ft.FlaskTesterError as e:
+        assert True, "error raised"
+
+def test_authenticator_password():
+    # all password carriers plus fake
+    auth = ft.Authenticator(allow=["basic", "param", "fake"])
+    auth.setPass("calvin", "clv-pass")
+    auth.setPass("hobbes", "hbs-pass")
+    auth.setPass("moe", "m-pass")
+    auth.setPass("rosalyn", "rsln-pass")
+    auth.setToken("susie", "ss-token")
+    kwargs = {}
+    auth.setAuth("calvin", kwargs, auth="basic")
+    assert kwargs["auth"] == ("calvin", "clv-pass")
+    kwargs = {"data": {}}
+    auth.setAuth("hobbes", kwargs, auth="param")
+    assert kwargs["data"]["USER"] == "hobbes" and kwargs["data"]["PASS"] == "hbs-pass"
+    kwargs = {"json": {}}
+    auth.setAuth("moe", kwargs, auth="param")
+    assert kwargs["json"]["USER"] == "moe" and kwargs["json"]["PASS"] == "m-pass"
+    kwargs = {"data": {}}
+    auth.setAuth("rosalyn", kwargs, auth="fake")
+    assert kwargs["data"]["LOGIN"] == "rosalyn"
+    kwargs = {"json": {}}
+    auth.setAuth("hobbes", kwargs, auth="fake")
+    assert kwargs["json"]["LOGIN"] == "hobbes"
+    # susie as a token, but no token carrier is allowed
+    try:
+        kwargs={}
+        auth.setAuth("susie", kwargs)
+        assert False, "must raise an error"  # pragma: no cover
+    except ft.FlaskTesterError as e:
+        assert True, "error raised"
