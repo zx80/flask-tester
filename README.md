@@ -145,7 +145,7 @@ Add more links about the project.
 ### 1.0 on 2024-03-12
 
 Add `FLASK_TESTER_DEFAULT` environment configuration to `ft_client`.
-Add `FLASK_TESTER_*` environment configurations to `ft_authenticator.
+Add `FLASK_TESTER_*` environment configurations to `ft_authenticator`.
 Improve documentation, including incredible badges.
 Working coverage tests.
 
