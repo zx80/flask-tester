@@ -53,7 +53,7 @@ check: venv
 
 .PHONY: clean clean.venv
 clean:
-	$(RM) -r __pycache__ */__pycache__ dist build .mypy_cache .pytest_cache
+	$(RM) -r __pycache__ */__pycache__ dist build .mypy_cache .pytest_cache .ruff_cache
 	$(RM) $(F.pdf)
 	$(MAKE) -C tests clean
 
