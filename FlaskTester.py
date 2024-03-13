@@ -195,6 +195,10 @@ class RequestFlaskResponse:
     """
 
     def __init__(self, response):
+        """Constructor parameter
+
+        - ``response`` from request.
+        """
 
         self._response = response
         self.status_code = response.status_code
@@ -214,6 +218,11 @@ class Client:
     """Common class for flask authenticated testing."""
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
+        """Constructor parameters.
+
+        - ``auth`` authenticator
+        - ``default_login`` if not ``login`` is set.
+        """
         self._auth = auth
         self._default_login = default_login
 
@@ -260,18 +269,23 @@ class Client:
         return res
 
     def get(self, path, **kwargs):
+        """HTTP GET request."""
         return self.request("GET", path, **kwargs)
 
     def post(self, path, **kwargs):
+        """HTTP POST request."""
         return self.request("POST", path, **kwargs)
 
     def put(self, path, **kwargs):
+        """HTTP PUT request."""
         return self.request("PUT", path, **kwargs)
 
     def patch(self, path, **kwargs):
+        """HTTP PATCH request."""
         return self.request("PATCH", path, **kwargs)
 
     def delete(self, path, **kwargs):
+        """HTTP DELETE request."""
         return self.request("DELETE", path, **kwargs)
 
     def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
@@ -291,6 +305,7 @@ class Client:
         # get HTTP response
         res = self.request(method, path, status=status, **kwargs)
 
+        # check contents
         if content is not None:
             if not re.search(content, res.text, re.DOTALL):  # pragma: no cover
                 log.error(f"cannot find {content} in {res.text}")
@@ -303,6 +318,12 @@ class RequestClient(Client):
     """Request-based test provider."""
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
+        """Constructor parameters.
+
+        - ``auth`` authenticator
+        - ``base_url`` target server
+        - ``default_login`` if not ``login`` is set.
+        """
         super().__init__(auth, default_login)
         self._base_url = base_url
         # reuse connections, otherwise it is too slow…
@@ -310,8 +331,10 @@ class RequestClient(Client):
         self._requests = Session()
 
     def _request(self, method: str, path: str, **kwargs):
-        # ensure file upload compatibility
+        """Actual request handling."""
+
         if "data" in kwargs:
+            # "data" to "files" parameter transfer
             data = kwargs["data"]
             files: dict[str, Any] = {}
             for name, whatever in data.items():
@@ -324,14 +347,15 @@ class RequestClient(Client):
                     files[name] = (file_name, file_handle, file_type)
                 else:
                     pass
-            # complete "data" to "files" parameter transfer
             for name in files:
                 del data[name]
             assert "files" not in kwargs
             kwargs["files"] = files
             # sanity
             assert not (files and "json" in kwargs), "cannot mix file upload and json?"
+
         res = self._requests.request(method, self._base_url + path, **kwargs)
+
         return RequestFlaskResponse(res)
 
 
@@ -339,16 +363,24 @@ class FlaskClient(Client):
     """Flask-based test provider."""
 
     def __init__(self, auth: Authenticator, client, default_login=None):
+        """Constructor parameters.
+
+        - ``auth`` authenticator
+        - ``client`` Flask ``test_client``
+        - ``default_login`` if not ``login`` is set.
+        """
         super().__init__(auth, default_login)
         self._client = client
 
     def _request(self, method: str, path: str, **kwargs):
+        """Actual request handling."""
         return self._client.open(method=method, path=path, **kwargs)
 
 
 @pytest.fixture
 def ft_authenticator():
     """Pytest Fixture: ft_authenticator."""
+
     level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
     log.setLevel(logging.DEBUG if level == "DEBUG" else
                  logging.INFO if level == "INFO" else
@@ -356,7 +388,9 @@ def ft_authenticator():
                  logging.ERROR if level == "ERROR" else
                  logging.CRITICAL if level == "CRITICAL" else
                  logging.NOTSET)
+
     allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param").split(" ")
+
     # per-scheme parameters, must be consistent with FSA configuration
     user = os.environ.get("FLASK_TESTER_USER", "USER")
     pwd = os.environ.get("FLASK_TESTER_PASS", "PASS")
@@ -365,18 +399,23 @@ def ft_authenticator():
     header = os.environ.get("FLASK_TESTER_HEADER", "Auth")
     cookie = os.environ.get("FLASK_TESTER_COOKIE", "auth")
     tparam = os.environ.get("FLASK_TESTER_TPARAM", "AUTH")
+
     # create authenticator, possibly with initial credentials
     auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer, header=header, cookie=cookie, tparam=tparam)
+
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
+
     yield auth 
 
 
 @pytest.fixture
 def ft_client(ft_authenticator):
     """Pytest Fixture: ft_client."""
+
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
+
     if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
         app_url = os.environ["FLASK_TESTER_URL"]
         client = RequestClient(ft_authenticator, app_url, default_login)
@@ -392,4 +431,5 @@ def ft_client(ft_authenticator):
         client = FlaskClient(ft_authenticator, app.test_client(), default_login)
     else:  # pragma: no cover
         raise FlaskTesterError("no Flask application to test")
+
     yield client
