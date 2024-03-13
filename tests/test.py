@@ -4,6 +4,9 @@ import FlaskSimpleAuth as fsa
 import FlaskTester as ft
 from FlaskTester import ft_client, ft_authenticator
 import app
+import http.server as htsv
+import threading
+import io
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -180,3 +183,18 @@ def test_client():
         assert False, "must raise an error"  # pragma: no cover
     except NotImplementedError:
         assert True, "error raised"
+
+def test_request_client():
+    httpd = htsv.HTTPServer(("", 8888), htsv.SimpleHTTPRequestHandler)
+    thread = threading.Thread(target = lambda: httpd.serve_forever())
+    thread.start()
+    try:
+        client = ft.RequestClient(ft.Authenticator(), "http://localhost:8888")
+        client.get("/", status=200)
+        hello = io.BytesIO(b"hello world")
+        client.post("/", status=501, data={"hello": hello})
+        hello = io.BytesIO(b"hello world")
+        client.post("/", status=501, data={"hello": (hello, "hello.txt", "text/plain")})
+        client.post("/", status=501, data={"hello": "world!"})
+    finally:
+        httpd.shutdown()

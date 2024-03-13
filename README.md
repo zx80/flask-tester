@@ -8,7 +8,7 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
-![Tests](https://img.shields.io/badge/tests-7%20✓-success)
+![Tests](https://img.shields.io/badge/tests-8%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
@@ -131,7 +131,6 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 - API documentation generation
 - control logging level
-- improve actual coverage
 
 ## Versions
 

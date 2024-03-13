@@ -299,7 +299,7 @@ class Client:
         return res
 
 
-class RequestClient(Client):  # pragma: no cover
+class RequestClient(Client):
     """Request-based test provider."""
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
@@ -316,7 +316,7 @@ class RequestClient(Client):  # pragma: no cover
             files: dict[str, Any] = {}
             for name, whatever in data.items():
                 # FIXME what types should be accepted?
-                if isinstance(whatever, io.BufferedReader):
+                if isinstance(whatever, io.IOBase):
                     files[name] = whatever
                 elif isinstance(whatever, tuple):
                     # reorder tuple to match requests expectations:
