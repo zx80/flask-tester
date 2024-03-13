@@ -135,7 +135,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## Versions
 
-### ? on ?
+### 1.1 on 2024-03-13
 
 Improve coverage tests.
 Add `FLASK_TESTER_LOG_LEVEL` environment to set the log level.
