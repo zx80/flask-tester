@@ -39,6 +39,8 @@ The package provides two fixtures:
     default is `Auth`.
   - `FLASK_TESTER_COOKIE` cookie name for for `cookie` token authentication,
     default is `auth`.
+  - `FLASK_TESTER_LOG_LEVEL` log level for module,
+    default is `NOTSET`.
 
 - `ft_client` for app testing, which depends on the previous fixture, plus environment
   variables which allow to find the application, at least one must be defined:
@@ -130,13 +132,13 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 ## TODO
 
 - API documentation generation
-- control logging level
 
 ## Versions
 
 ### ? on ?
 
 Improve coverage tests.
+Add `FLASK_TESTER_LOG_LEVEL` environment to set the log level.
 Add explicit license section and file.
 Add more links about the project.
 

@@ -7,7 +7,7 @@ import logging
 import pytest
 
 log = logging.getLogger("flask_tester")
-# log.setLevel(level=logging.DEBUG)
+
 
 class FlaskTesterError(BaseException):
     pass
@@ -349,6 +349,13 @@ class FlaskClient(Client):
 @pytest.fixture
 def ft_authenticator():
     """Pytest Fixture: ft_authenticator."""
+    level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
+    log.setLevel(logging.DEBUG if level == "DEBUG" else
+                 logging.INFO if level == "INFO" else
+                 logging.WARNING if level == "WARNING" else
+                 logging.ERROR if level == "ERROR" else
+                 logging.CRITICAL if level == "CRITICAL" else
+                 logging.NOTSET)
     allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param").split(" ")
     # per-scheme parameters, must be consistent with FSA configuration
     user = os.environ.get("FLASK_TESTER_USER", "USER")
