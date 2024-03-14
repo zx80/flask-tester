@@ -49,11 +49,14 @@ def test_app(api):
 ```
 
 This can be run against a server:
+
 ```shell
 export FLASK_TESTER_URL="https://api.flask-tester.org"
 pytest test.py
 ```
+
 Or locally with the Flask internal test infrastructure:
+
 ```shell
 export FLASK_TESTER_APP="app"
 pytest test.py
