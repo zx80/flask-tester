@@ -30,7 +30,7 @@ import pytest
 from FlaskTester import ft_authenticator, ft_client
 
 @pytest.fixture
-def api(ft_client):
+def app(ft_client):
     # add test passwords for Calvin and Hobbes (must be consistent with app!)
     ft_client.setPass("calvin", "clv-pass")
     ft_client.setPass("hobbes", "hbs-pass")
@@ -41,10 +41,10 @@ def api(ft_client):
     # return working client
     yield ft_client
 
-def test_app(api):
-    api.get("/admin", login="calvin", auth="bearer", status=200)
-    api.get("/admin", login="calvin", auth="basic", status=200)
-    res = api.get("/admin", login="hobbes", auth="basic", status=403)
+def test_app(app):
+    app.get("/admin", login="calvin", auth="bearer", status=200)
+    app.get("/admin", login="calvin", auth="basic", status=200)
+    res = app.get("/admin", login="hobbes", auth="basic", status=403)
     assert 'not in group "ADMIN"' in res.text
 ```
 

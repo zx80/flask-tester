@@ -17,8 +17,28 @@ os.environ.update(
     FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in app.PASSES.items()),
 )
 
-# must provide url or package of Flask application to test
-assert "FLASK_TESTER_URL" in os.environ or "FLASK_TESTER_APP" in os.environ
+def test_sanity():
+    # must provide url or package of Flask application to test
+    assert "FLASK_TESTER_URL" in os.environ or "FLASK_TESTER_APP" in os.environ
+
+# example from README.md
+@pytest.fixture
+def app(ft_client):
+    # add test passwords for Calvin and Hobbes (must be consistent with app!)
+    ft_client.setPass("calvin", "clv-pass")
+    ft_client.setPass("hobbes", "hbs-pass")
+    # get Calvin's token, assume json result {"token": "<token-value>"}
+    res = ft_client.get("/token", login="calvin", auth="basic", status=200)
+    assert res.is_json
+    ft_client.setToken("calvin", res.json["token"])
+    # return working client
+    yield ft_client
+
+def test_app(app):
+    app.get("/admin", login="calvin", auth="bearer", status=200)
+    app.get("/admin", login="calvin", auth="basic", status=200)
+    res = app.get("/admin", login="hobbes", auth="basic", status=403)
+    assert 'not in group "ADMIN"' in res.text
 
 @pytest.fixture
 def api(ft_client):
@@ -57,13 +77,6 @@ def api(ft_client):
     assert res.json["user"] == "calvin"
     # add a bad password
     yield ft_client
-
-def test_app(api):
-    """Test example from README."""
-    api.get("/admin", login="calvin", auth="bearer", status=200)
-    api.get("/admin", login="calvin", auth="basic", status=200)
-    res = api.get("/admin", login="hobbes", auth="basic", status=403)
-    assert 'not in group "ADMIN"' in res.text
 
 def test_admin(api):
     # check authentication schemes
