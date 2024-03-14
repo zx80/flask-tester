@@ -8,13 +8,61 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
-![Tests](https://img.shields.io/badge/tests-8%20✓-success)
+![Tests](https://img.shields.io/badge/tests-9%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
 ![Version](https://img.shields.io/pypi/v/FlaskTester)
 ![Badges](https://img.shields.io/badge/badges-8-informational)
 ![License](https://img.shields.io/pypi/l/flasktester?style=flat)
+
+## Usage
+
+Install package with `pip install FlaskTester` or equivalent.
+
+The following test creates a local fixture with 2 users identified by a
+password, and retrieves a token for the first user using a `/token` route
+provided by the application.
+It then proceeds to run some requests againsit the `/admin` route.
+
+```python
+import pytest
+from FlaskTester import ft_authenticator, ft_client
+
+@pytest.fixture
+def api(ft_client):
+    # add test passwords for Calvin and Hobbes (must be consistent with app!)
+    ft_client.setPass("calvin", "clv-pass")
+    ft_client.setPass("hobbes", "hbs-pass")
+    # get Calvin's token, assume json result {"token": "<token-value>"}
+    res = ft_client.get("/token", login="calvin", auth="basic", status=200)
+    assert res.is_json
+    ft_client.setToken("calvin", res.json["token"])
+    # return working client
+    yield ft_client
+
+def test_app(api):
+    api.get("/admin", login="calvin", auth="bearer", status=200)
+    api.get("/admin", login="calvin", auth="basic", status=200)
+    res = api.get("/admin", login="hobbes", auth="basic", status=403)
+    assert 'not in group "ADMIN"' in res.text
+```
+
+This can be run against a server:
+```shell
+export FLASK_TESTER_URL="https://api.flask-tester.org"
+pytest test.py
+```
+Or locally with the Flask internal test infrastructure:
+```shell
+export FLASK_TESTER_APP="app"
+pytest test.py
+```
+
+See [`tests/app.py`](tests/app.py) for a sample
+[Flask](https://flask.palletsprojects.com/)
+REST application back-end with password and token authentication developed with
+[FlaskSimpleAuth](https://pypi.org/project/FlaskSimpleAuth/).
 
 ## Fixtures
 
@@ -42,11 +90,16 @@ The package provides two fixtures:
   - `FLASK_TESTER_LOG_LEVEL` log level for module,
     default is `NOTSET`.
 
-- `ft_client` for app testing, which depends on the previous fixture, plus environment
-  variables which allow to find the application, at least one must be defined:
+  The fixture has 3 main methods:
+  - `setPass` to associate a password to a user, set to _None_ to remove credential.
+  - `setToken` to associate a token to a user, set to _None_ to remove credential.
+  - `setAuth` to add authentication data to a request `kwargs`.
+
+- `ft_client` for app testing, which depends on the previous fixture, plus
+  environment variables which allow to find the application, at least one must
+  be defined:
 
   - `FLASK_TESTER_URL` URL of the running application for external tests.
-
     The application is expected to be already running when the test is started.
 
   - `FLASK_TESTER_APP` package (filename with `.py`) to be imported for the application.
@@ -56,34 +109,17 @@ The package provides two fixtures:
   Moreover:
   - `FLASK_TESTER_DEFAULT` default login for authentication, default is _None_.
 
-```python
-import os
-import pytest
-from FlaskTester import ft_authenticator, ft_client
-
-@pytest.fixture
-def api(ft_client):
-    # add test passwords for Calvin and Hobbes (must be consistent with app!)
-    ft_client.setPass("calvin", "clv-pass")
-    ft_client.setPass("hobbes", "hbs-pass")
-    # get Calvin's token, assume {"token": "<token-value>"}
-    res = ft_client.get("/token", login="calvin", auth="basic", status=200)
-    assert res.is_json
-    ft_client.setToken("calvin", res.json["token"])
-    yield ft_client
-
-def test_app(api):
-    api.get("/admin", login="calvin", auth="bearer", status=200)
-    api.get("/admin", login="calvin", auth="basic", status=200)
-    api.get("/admin", login="hobbes", auth="basic", status=401)
-```
+  The fixture then provides test methods to issue test requests against a Flask application:
+  - `request` generic request with `login`, `auth`, `status` end `content` extensions.
+  - `get post put patch delete` methods with `login`, `auth` and `status` extensions.
+  Moreover, `setPass` and `setToken` are forwarded to the internal authenticator.
 
 Authenticator environment variables can be set from the pytest Python test file by
 assigning them through `os.environ`.
 
 ## Classes
 
-The implementation of these fixtures is based on five classes:
+The implementation of these fixtures is based on five classes plus exceptions:
 
 - `Authenticator` class to store test credentials.
 
@@ -120,6 +156,10 @@ The implementation of these fixtures is based on five classes:
   File parameters in `data`, with the format expected by the Flask test client,
   are turned into `files` parameters as expected by `requests`.
 
+- The following exceptions are defined:
+  - `FlaskTesterError` root class for exceptions.
+  - `AuthError` authentication-related errors.
+
 ## License
 
 This code is public domain.
@@ -134,6 +174,10 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 - API documentation generation
 
 ## Versions
+
+### ? on ?
+
+Improved documentation and tests.
 
 ### 1.1 on 2024-03-13
 

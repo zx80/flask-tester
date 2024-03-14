@@ -58,6 +58,13 @@ def api(ft_client):
     # add a bad password
     yield ft_client
 
+def test_app(api):
+    """Test example from README."""
+    api.get("/admin", login="calvin", auth="bearer", status=200)
+    api.get("/admin", login="calvin", auth="basic", status=200)
+    res = api.get("/admin", login="hobbes", auth="basic", status=403)
+    assert 'not in group "ADMIN"' in res.text
+
 def test_admin(api):
     # check authentication schemes
     for auth in (None, "basic", "param", "bearer"):
