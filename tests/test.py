@@ -109,7 +109,6 @@ def test_authenticator_token():
     auth.setToken("susie", "ss-token")
     auth.setToken("hobbes", "hbs-token")
     auth.setToken("moe", "m-token")
-    auth.setPass("rosalyn", "rsln-pass")
     kwargs = {}
     auth.setAuth("calvin", kwargs, auth="bearer")
     assert kwargs["headers"]["Authorization"] == "Bearer clv-token"
@@ -134,6 +133,14 @@ def test_authenticator_token():
         assert True, "error raised"
     # rosalyn as a password, but no password carrier is allowed
     try:
+        auth.setPass("rosalyn", "rsln-pass")
+        assert False, "must raise an error"  # pragma: no cover
+    except ft.AuthError:
+        assert True, "error raised"
+    # force to trigger later errors
+    auth._has_pass = True
+    auth.setPass("rosalyn", "rsln-pass")
+    try:
         kwargs={}
         auth.setAuth("rosalyn", kwargs)
         assert False, "must raise an error"  # pragma: no cover
@@ -147,7 +154,6 @@ def test_authenticator_password():
     auth.setPass("hobbes", "hbs-pass")
     auth.setPass("moe", "m-pass")
     auth.setPass("rosalyn", "rsln-pass")
-    auth.setToken("susie", "ss-token")
     kwargs = {}
     auth.setAuth("calvin", kwargs, auth="basic")
     assert kwargs["auth"] == ("calvin", "clv-pass")
@@ -164,6 +170,14 @@ def test_authenticator_password():
     auth.setAuth("hobbes", kwargs, auth="fake")
     assert kwargs["json"]["LOGIN"] == "hobbes"
     # susie as a token, but no token carrier is allowed
+    try:
+        auth.setToken("susie", "ss-token")
+        assert False, "must raise an error"  # pragma: no cover
+    except ft.FlaskTesterError:
+        assert True, "error raised"
+    # force to trigger later error
+    auth._has_token = True
+    auth.setToken("susie", "ss-token")
     try:
         kwargs={}
         auth.setAuth("susie", kwargs)

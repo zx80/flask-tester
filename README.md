@@ -181,6 +181,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 ### ? on ?
 
 Improved documentation and tests.
+Raise an error when setting unusable passwords or tokens.
 
 ### 1.1 on 2024-03-13
 

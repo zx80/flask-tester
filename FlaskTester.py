@@ -30,7 +30,12 @@ class Authenticator:
     - ``fake``: fake scheme, login directly passed as a parameter
     """
 
-    _AUTH_SCHEMES = ("basic", "param", "bearer", "header", "cookie", "tparam", "fake")
+    _TOKEN_SCHEMES = {"bearer", "header", "cookie", "tparam"}
+    _PASS_SCHEMES = {"basic", "param"}
+
+    _AUTH_SCHEMES = {"fake"}
+    _AUTH_SCHEMES.update(_TOKEN_SCHEMES)
+    _AUTH_SCHEMES.update(_PASS_SCHEMES)
 
     def __init__(self,
              allow: list[str] = ["bearer", "basic", "param"],
@@ -65,8 +70,13 @@ class Authenticator:
           default is ``AUTH``
         """
 
+        self._has_pass, self._has_token = False, False
         for auth in allow:
             assert auth in self._AUTH_SCHEMES
+            if auth in self._TOKEN_SCHEMES:
+                self._has_token = True
+            if auth in self._PASS_SCHEMES:
+                self._has_pass = True
         self._allow = allow
 
         # authentication scheme parameters
@@ -93,6 +103,8 @@ class Authenticator:
 
     def setPass(self, login: str, pw: str|None):
         """Associate a password to a user."""
+        if not self._has_pass:
+            raise AuthError("cannot set password, no password scheme allowed")
         self._set(login, pw, self._passes)
 
     def setPasses(self, pws: list[str]):
@@ -103,6 +115,8 @@ class Authenticator:
 
     def setToken(self, login: str, token: str|None):
         """Associate a token to a user."""
+        if not self._has_token:
+            raise AuthError("cannot set token, no token scheme allowed")
         self._set(login, token, self._tokens)
 
     def _param(self, kwargs: dict[str, Any], key: str, val: Any):
