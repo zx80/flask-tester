@@ -23,7 +23,7 @@ Install package with `pip install FlaskTester` or equivalent.
 The following test creates a local fixture with 2 users identified by a
 password, and retrieves a token for the first user using a `/token` route
 provided by the application.
-It then proceeds to run some requests againsit the `/admin` route.
+It then proceeds to run some requests against the `/admin` route.
 
 ```python
 import pytest
@@ -171,6 +171,11 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
+
+## See Also, or Not
+
+- [Flask Testing](https://github.com/jarus/flask-testing) an unmaintained
+  old-style unit test for Flask 1.x, without authentication help.
 
 ## TODO
 
