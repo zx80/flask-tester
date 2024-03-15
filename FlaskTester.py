@@ -10,10 +10,12 @@ log = logging.getLogger("flask_tester")
 
 
 class FlaskTesterError(BaseException):
+    """Base exception for FlaskTester package."""
     pass
 
 
 class AuthError(FlaskTesterError):
+    """Authenticator Exception."""
     pass
 
 
