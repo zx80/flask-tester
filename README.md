@@ -1,8 +1,9 @@
-# FlaskTester - Pytest fixtures for Flask internal and external tests
+# FlaskTester - Pytest fixtures for Flask internal and external authenticated tests
 
 This package allows to run authenticated tests against a Flask application,
 either with internal Flask tests (aka `test_client`) or external tests (with
-`requests` which performs actual HTTP requests).
+`requests` which performs actual HTTP requests), including password and token
+authentication.
 
 Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
@@ -65,9 +66,9 @@ export FLASK_TESTER_APP="app:app"                # set app module
 pytest test.py                                   # run internal tests
 ```
 
-See [`tests/app.py`](tests/app.py) for a sample
+The above test runs with [`tests/app.py`](tests/app.py)
 [Flask](https://flask.palletsprojects.com/)
-REST application back-end with password and token authentication developed with
+REST application back-end with password and token authentication based on
 [FlaskSimpleAuth](https://pypi.org/project/FlaskSimpleAuth/).
 
 ## Fixtures
