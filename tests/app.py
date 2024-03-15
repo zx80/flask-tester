@@ -2,12 +2,11 @@
 
 import FlaskSimpleAuth as fsa
 
-TEST_PASSES: dict[str, str] = {"calvin": "clv-pass", "hobbes": "hbs-pass", "susie": "ss-pass", "moe": "m-pass"}
-
 app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["token", "param", "basic"])
 
-# authentication
-PASSDB = {login: app.hash_password(pwd) for login, pwd in TEST_PASSES.items()}
+# authentication with randomly-generated passwordss
+import secret
+PASSDB = {login: app.hash_password(pwd) for login, pwd in secret.PASSES.items()}
 
 @app.get_user_pass
 def get_user_pass(login: str) -> str|None:

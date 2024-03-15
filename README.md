@@ -193,6 +193,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 Improved documentation and tests.
 Raise an error when setting unusable passwords or tokens.
 Add support for `pkg:name` application syntax.
+Use random passwords when testing.
 
 ### 1.1 on 2024-03-13
 

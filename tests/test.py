@@ -3,7 +3,7 @@ import pytest
 import FlaskSimpleAuth as fsa
 import FlaskTester as ft
 from FlaskTester import ft_client, ft_authenticator
-import app
+import secret
 import http.server as htsv
 import threading
 import io
@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 # set authn for ft_authenticator
 os.environ.update(
     FLASK_TESTER_ALLOW="bearer basic param",
-    FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in app.TEST_PASSES.items()),
+    FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in secret.PASSES.items()),
 )
 
 def test_sanity():
@@ -25,8 +25,8 @@ def test_sanity():
 @pytest.fixture
 def app(ft_client):
     # add test passwords for Calvin and Hobbes (must be consistent with app!)
-    ft_client.setPass("calvin", "clv-pass")
-    ft_client.setPass("hobbes", "hbs-pass")
+    ft_client.setPass("calvin", secret.PASSES["calvin"])
+    ft_client.setPass("hobbes", secret.PASSES["hobbes"])
     # get Calvin's token, assume json result {"token": "<token-value>"}
     res = ft_client.get("/token", login="calvin", auth="basic", status=200)
     assert res.is_json
