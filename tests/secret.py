@@ -6,7 +6,7 @@ import string
 
 LENGTH = 16
 PASSES: dict[str, str] = {}
-CHARS = "".join(string.printable.split(","))  # all but ","
+CHARS = string.printable.replace(",", "")  # all but ","
 
 # both client and server must share the same seed.
 random.seed(os.environ.get("TEST_SEED", "please set TEST_SEED"))

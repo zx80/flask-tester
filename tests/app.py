@@ -10,7 +10,7 @@ PASSDB = {login: app.hash_password(pwd) for login, pwd in secret.PASSES.items()}
 
 @app.get_user_pass
 def get_user_pass(login: str) -> str|None:
-    return PASSDB[login] if login in PASSDB else None
+    return PASSDB.get(login, None)
 
 # authorization
 ADMINS: set[str] = {"calvin", "susie"}
