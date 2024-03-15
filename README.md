@@ -27,14 +27,15 @@ provided by the application.
 It then proceeds to run some requests against the `/admin` route.
 
 ```python
+import secret
 import pytest
 from FlaskTester import ft_authenticator, ft_client
 
 @pytest.fixture
 def app(ft_client):
     # add test passwords for Calvin and Hobbes (must be consistent with app!)
-    ft_client.setPass("calvin", "clv-pass")
-    ft_client.setPass("hobbes", "hbs-pass")
+    ft_client.setPass("calvin", secret.PASSES["calvin"])
+    ft_client.setPass("hobbes", secret.PASSES["hobbes"])
     # get Calvin's token, assume json result {"token": "<token-value>"}
     res = ft_client.get("/token", login="calvin", auth="basic", status=200)
     assert res.is_json

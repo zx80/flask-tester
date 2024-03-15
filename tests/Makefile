@@ -13,10 +13,12 @@ clean:
 FLASK   = flask
 PYTEST  = pytest --log-level=debug --capture=tee-sys
 PYTOPT  =
+SEED    = $(shell head -c 16 /dev/urandom | sha1sum)
 
 .PHONY: check.external
 check.external:
 	source $(VENV)/bin/activate
+	export TEST_SEED="$(SEED)"
 	flask --app app:app run --port=$(PORT) &
 	flask_pid=$$!
 	sleep $(SLEEP)
@@ -27,6 +29,7 @@ check.external:
 .PHONY: check.internal
 check.internal:
 	source $(VENV)/bin/activate
+	export TEST_SEED="$(SEED)"
 	export FLASK_TESTER_APP="app:create_app"
 	$(PYTEST) $(PYTOPT) test.py
 
