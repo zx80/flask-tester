@@ -13,7 +13,7 @@ FLASK   = flask
 PORT    = 5000
 PYTEST  = pytest --log-level=debug --capture=tee-sys
 PYTOPT  =
-SEED    = $(shell head -c 33 /dev/urandom | base64)  # over 256 bits
+SEED    = $(shell head -c 33 /dev/urandom | base64)
 
 .PHONY: check.external
 check.external:
