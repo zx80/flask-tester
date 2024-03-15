@@ -4,13 +4,17 @@ import os
 import random
 import string
 
+# parameters
 LENGTH = 16
-PASSES: dict[str, str] = {}
 CHARS = string.printable.replace(",", "")  # all but ","
+USERS = ["calvin", "hobbes", "susie", "moe"]
 
-# both client and server must share the same seed.
+# login -> clear-password
+PASSES: dict[str, str] = {}
+
+# both client and server must share the same seed!
 random.seed(os.environ.get("TEST_SEED", "please set TEST_SEED"))
 
 # generate 4 users with pseudo-random 16-chars passwords
-for login in ("calvin", "hobbes", "susie", "moe"):
+for login in USERS:
     PASSES[login] = "".join(random.choice(CHARS) for _ in range(LENGTH))

@@ -4,7 +4,7 @@ import FlaskSimpleAuth as fsa
 
 app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["token", "param", "basic"])
 
-# authentication with randomly-generated passwordss
+# authentication with randomly-generated passwords
 import secret
 PASSDB = {login: app.hash_password(pwd) for login, pwd in secret.PASSES.items()}
 

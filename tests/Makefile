@@ -2,7 +2,6 @@ SHELL   = /bin/bash
 .ONESHELL:
 
 VENV    = ../venv
-PORT    = 5000
 SLEEP   = 3
 
 .PHONY: clean
@@ -11,9 +10,10 @@ clean:
 	$(RM) .coverage
 
 FLASK   = flask
+PORT    = 5000
 PYTEST  = pytest --log-level=debug --capture=tee-sys
 PYTOPT  =
-SEED    = $(shell head -c 16 /dev/urandom | sha1sum)
+SEED    = $(shell head -c 33 /dev/urandom | base64)  # over 256 bits
 
 .PHONY: check.external
 check.external:
