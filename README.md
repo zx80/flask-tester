@@ -53,6 +53,7 @@ def test_app(app):
 This can be run against a (local) server:
 
 ```shell
+export TEST_SEED="some-random-data"              # shared seed
 flask --app app:app run &                        # start flask app
 pid=$!                                           # keep pid
 export FLASK_TESTER_URL="http://localhost:5000"  # set app local url
