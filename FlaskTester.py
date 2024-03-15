@@ -420,7 +420,7 @@ def ft_authenticator():
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
 
-    yield auth 
+    yield auth
 
 
 @pytest.fixture
@@ -431,19 +431,31 @@ def ft_client(ft_authenticator):
     client: Client
 
     if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
+
         app_url = os.environ["FLASK_TESTER_URL"]
         client = RequestClient(ft_authenticator, app_url, default_login)
+
     elif "FLASK_TESTER_APP" in os.environ:
-        pkg_name = os.environ["FLASK_TESTER_APP"]
+
+        # load app package
+        pkg_name, app = os.environ["FLASK_TESTER_APP"], None
+        app_names = ["app", "application", "create_app", "make_app"]
+        if ":" in pkg_name:  # override defaults
+            pkg_name, app_name = pkg_name.split(":", 1)
+            app_names = [app_name]
         pkg = importlib.import_module(pkg_name)
-        if hasattr(pkg, "app"):
-            app = getattr(pkg, "app")
-        elif hasattr(pkg, "create_app"):  # pragma: no cover
-            app = getattr(pkg, "create_app")()
-        else:  # pragma: no cover
+        # find app in package
+        for name in app_names:
+            if hasattr(pkg, name):
+                app = getattr(pkg, name)
+                if callable(app) and not hasattr(app, "test_client"):
+                    app = app()
+        if not app:  # pragma: no cover
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
         client = FlaskClient(ft_authenticator, app.test_client(), default_login)
+
     else:  # pragma: no cover
+
         raise FlaskTesterError("no Flask application to test")
 
     yield client

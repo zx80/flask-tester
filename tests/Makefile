@@ -17,7 +17,7 @@ PYTOPT  =
 .PHONY: check.external
 check.external:
 	source $(VENV)/bin/activate
-	flask run --port=$(PORT) &
+	flask --app app:app run --port=$(PORT) &
 	flask_pid=$$!
 	sleep $(SLEEP)
 	export FLASK_TESTER_URL="http://localhost:$(PORT)"
@@ -27,7 +27,7 @@ check.external:
 .PHONY: check.internal
 check.internal:
 	source $(VENV)/bin/activate
-	export FLASK_TESTER_APP=app
+	export FLASK_TESTER_APP="app:create_app"
 	$(PYTEST) $(PYTOPT) test.py
 
 .PHONY: check.coverage

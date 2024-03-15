@@ -1,15 +1,19 @@
-# Simple Flask application with authn and authz
+# Simple Test Flask application with authn and authz
 
 import FlaskSimpleAuth as fsa
 
+TEST_PASSES: dict[str, str] = {"calvin": "clv-pass", "hobbes": "hbs-pass", "susie": "ss-pass", "moe": "m-pass"}
+
 app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["token", "param", "basic"])
 
-PASSES: dict[str, str] = {"calvin": "clv-pass", "hobbes": "hbs-pass", "susie": "ss-pass", "moe": "m-pass"}
+# authentication
+PASSDB = {login: app.hash_password(pwd) for login, pwd in TEST_PASSES.items()}
 
 @app.get_user_pass
 def get_user_pass(login: str) -> str|None:
-    return app.hash_password(PASSES[login]) if login in PASSES else None
+    return PASSDB[login] if login in PASSDB else None
 
+# authorization
 ADMINS: set[str] = {"calvin", "susie"}
 
 @app.group_check("ADMIN")
@@ -32,3 +36,7 @@ def get_who_am_i(user: fsa.CurrentUser):
 @app.get("/admin", authorize="ADMIN")
 def get_admin(user: fsa.CurrentUser):
     return {"user": user, "isadmin": True}, 200
+
+# for coverage
+def create_app():
+    return app

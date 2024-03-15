@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 # set authn for ft_authenticator
 os.environ.update(
     FLASK_TESTER_ALLOW="bearer basic param",
-    FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in app.PASSES.items()),
+    FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in app.TEST_PASSES.items()),
 )
 
 def test_sanity():

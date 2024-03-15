@@ -8,7 +8,7 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
-![Tests](https://img.shields.io/badge/tests-9%20✓-success)
+![Tests](https://img.shields.io/badge/tests-10%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
@@ -48,18 +48,21 @@ def test_app(app):
     assert 'not in group "ADMIN"' in res.text
 ```
 
-This can be run against a server:
+This can be run against a (local) server:
 
 ```shell
-export FLASK_TESTER_URL="https://api.flask-tester.org"
-pytest test.py
+flask --app app:app run &                        # start flask app
+pid=$!                                           # keep pid
+export FLASK_TESTER_URL="http://localhost:5000"  # set app local url
+pytest test.py                                   # run external tests
+kill $pid                                        # stop app with pid
 ```
 
 Or locally with the Flask internal test infrastructure:
 
 ```shell
-export FLASK_TESTER_APP="app"
-pytest test.py
+export FLASK_TESTER_APP="app:app"                # set app module
+pytest test.py                                   # run internal tests
 ```
 
 See [`tests/app.py`](tests/app.py) for a sample
@@ -106,8 +109,9 @@ The package provides two fixtures:
     The application is expected to be already running when the test is started.
 
   - `FLASK_TESTER_APP` package (filename with `.py`) to be imported for the application.
-    - the application is expected to be named `app`
-    - if not available, look and call for `create_app`
+    - for `pkg:name`, `name` is the application in `pkg`.
+    - for `pkg`, look for app as `app`, `application`, `create_app`, `make_app`.
+    - in both cases, `name` is called if callable and not a Flask application.
 
   Moreover:
   - `FLASK_TESTER_DEFAULT` default login for authentication, default is _None_.
@@ -187,6 +191,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 Improved documentation and tests.
 Raise an error when setting unusable passwords or tokens.
+Add support for `pkg:name` application syntax.
 
 ### 1.1 on 2024-03-13
 
