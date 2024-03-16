@@ -246,11 +246,11 @@ class Client:
         self._default_login = default_login
 
     def setToken(self, login: str, token: str|None):
-        """Associate a token to a login, None to remove."""
+        """Associate a token to a login, *None* to remove."""
         self._auth.setToken(login, token)
 
     def setPass(self, login: str, password: str|None):
-        """Associate a password to a login, None to remove."""
+        """Associate a password to a login, *None* to remove."""
         self._auth.setPass(login, password)
 
     def _request(self, method: str, path: str, **kwargs):
@@ -267,9 +267,9 @@ class Client:
 
         Optional parameters:
 
-        - ``status``: expected HTTP status, None to skip status check
-        - ``login``: authenticated user, use **explicit** None to skip
-        - ``auth``: authentication schme to use
+        - ``status``: expected HTTP status, *None* to skip status check
+        - ``login``: authenticated user, use **explicit** *None* to skip
+        - ``auth``: authentication scheme to use
         - ``**kwargs``: more request parameters (headers, data, json…)
         """
 
@@ -321,7 +321,7 @@ class Client:
         Optional parameters:
 
         - ``content``: regular expression in response body
-        - ``login``: authenticated user, use explicit None to skip
+        - ``login``: authenticated user, use explicit *None* to skip
         - ``**kwargs``: more request parameters (headers, data, json…)
         """
 
