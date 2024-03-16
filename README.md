@@ -190,8 +190,9 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## Versions
 
-### ? on ?
+### 1.3 on ?
 
+Generate API documentation.
 Cleaner code.
 
 ### 1.2 on 2024-03-15

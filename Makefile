@@ -39,7 +39,7 @@ check.coverage: venv
 check.docs:
 	source venv/bin/activate
 	pymarkdown -d MD013 scan *.md
-	# sphinx-lint docs/
+	sphinx-lint docs/
 
 check: venv
 	source venv/bin/activate
@@ -51,20 +51,34 @@ check: venv
 	$(MAKE) check.pytest && \
 	$(MAKE) check.coverage
 
-.PHONY: clean clean.venv
+.PHONY: docs
+docs: venv
+	source venv/bin/activate
+	$(MAKE) -C docs html
+	find docs/_build -type d -print0 | xargs -0 chmod a+rx
+	find docs/_build -type f -print0 | xargs -0 chmod a+r
+	ln -s docs/_build/html _site
+
+.PHONY: clean
 clean:
-	$(RM) -r __pycache__ */__pycache__ dist build .mypy_cache .pytest_cache .ruff_cache
+	$(RM) -r __pycache__ */__pycache__ dist build .mypy_cache .pytest_cache .ruff_cache _site
 	$(RM) $(F.pdf)
 	$(MAKE) -C tests clean
+	$(MAKE) -C docs clean
 
+.PHONY: clean.venv
 clean.venv: clean
 	$(RM) -r venv *.egg-info
+
+.PHONY: venv.update
+venv.update:
+	$(PIP) install -U pip
+	$(PIP) install -e .[dev,doc]
 
 # for local testing
 venv:
 	$(PYTHON) -m venv venv
-	$(PIP) install -U pip
-	$(PIP) install -e .[dev,doc]
+	$(MAKE) venv.update
 
 $(MODULE).egg-info: venv
 	$(PIP) install -e .

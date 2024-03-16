@@ -1,0 +1,31 @@
+name: FlaskTest documentation publication on GitHub
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install dependencies
+        run: make venv.update
+      - name: Check documentation syntax
+        run: make check.docs
+      - name: Generate documentation
+        run: make docs
+      - name: Upload to GitHub Pages
+        # FIXME what is the difference with deploy below?
+        uses: actions/upload-pages-artifact@v2
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
