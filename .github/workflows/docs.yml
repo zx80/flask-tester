@@ -17,8 +17,8 @@ jobs:
       - name: Generate documentation
         run: make VENV= docs
       - name: Upload to GitHub Pages
-        # FIXME what is the difference with deploy below?
         uses: actions/upload-pages-artifact@v3
+  # NOTE separate jobs because this one requires authn data
   deploy:
     environment:
       name: github-pages
