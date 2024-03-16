@@ -261,14 +261,16 @@ class Client:
         """Run a possibly authenticated HTTP request.
 
         Mandatory parameters:
-        - method: HTTP method ("GET", "POST", "PATCH", "DELETE"…)
-        - path: local path under the base URL
+
+        - ``method``: HTTP method ("GET", "POST", "PATCH", "DELETE"…)
+        - ``path``: local path under the base URL
 
         Optional parameters:
-        - status: expected HTTP status, None to skip status check
-        - login: authenticated user, use **explicit** None to skip
-        - auth: authentication schme to use
-        - **kwargs: more request parameters (headers, data, json…)
+
+        - ``status``: expected HTTP status, None to skip status check
+        - ``login``: authenticated user, use **explicit** None to skip
+        - ``auth``: authentication schme to use
+        - ``**kwargs``: more request parameters (headers, data, json…)
         """
 
         if "login" in kwargs:
@@ -311,14 +313,16 @@ class Client:
         """Run a query and check the response.
 
         Mandatory parameters:
-        - method: HTTP method ("GET", "POST", "PATCH", "DELETE"…)
-        - path: local path under the base URL
-        - status: expected HTTP status
+
+        - ``method``: HTTP method ("GET", "POST", "PATCH", "DELETE"…)
+        - ``path``: local path under the base URL
+        - ``status``: expected HTTP status
 
         Optional parameters:
-        - content: regular expression in response body
-        - login: authenticated user, use explicit None to skip
-        - **kwargs: more request parameters (headers, data, json…)
+
+        - ``content``: regular expression in response body
+        - ``login``: authenticated user, use explicit None to skip
+        - ``**kwargs``: more request parameters (headers, data, json…)
         """
 
         # get HTTP response
