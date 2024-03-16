@@ -23,6 +23,7 @@ class Authenticator:
     """Manage authentication for test requests.
 
     Supported schemes:
+
     - ``basic``: HTTP Basic Authentication
     - ``param``: password with HTTP or JSON parameters
     - ``bearer``: token in ``Authorization`` _bearer_ header
@@ -30,6 +31,25 @@ class Authenticator:
     - ``cookie``: token in a cookie
     - ``tparam``: token in a parameter
     - ``fake``: fake scheme, login directly passed as a parameter
+
+    Constructor parameters:
+
+    - ``allow``: list of allowed schemes.
+      default is ``["bearer", "basic", "param"]``
+    - ``user``: parameter for user on ``param`` password authentication,
+      default is ``USER``
+    - ``pwd``: parameter for password on ``param`` password authentication,
+      default is ``PASS``
+    - ``login``: parameter for user on ``fake`` authentication,
+      default is ``LOGIN``
+    - ``bearer``: name of bearer scheme for token,
+      default is ``Bearer``
+    - ``header``: name of header for token,
+      default is ``Auth``
+    - ``cookie``: name of cookie for token,
+      default is ``auth``
+    - ``tparam``: name of parameter for token,
+      default is ``AUTH``
     """
 
     _TOKEN_SCHEMES = {"bearer", "header", "cookie", "tparam"}
@@ -52,25 +72,6 @@ class Authenticator:
              cookie: str = "auth",
              tparam: str = "AUTH",
          ):
-        """Constructor parameters:
-
-        - ``allow``: list of allowed schemes.
-          default is ``["bearer", "basic", "param"]``
-        - ``user``: parameter for user on ``param`` password authentication,
-          default is ``USER``
-        - ``pwd``: parameter for password on ``param`` password authentication,
-          default is ``PASS``
-        - ``login``: parameter for user on ``fake`` authentication,
-          default is ``LOGIN``
-        - ``bearer``: name of bearer scheme for token,
-          default is ``Bearer``
-        - ``header``: name of header for token,
-          default is ``Auth``
-        - ``cookie``: name of cookie for token,
-          default is ``auth``
-        - ``tparam``: name of parameter for token,
-          default is ``AUTH``
-        """
 
         self._has_pass, self._has_token = False, False
         for auth in allow:
@@ -201,20 +202,21 @@ class RequestFlaskResponse:
     This only work for simple responses.
 
     Available attributes:
-    - status_code: integer status code
-    - data: body as bytes
-    - text: body as a string
-    - headers: dict of headers and their values
-    - cookies: dict of cookies
-    - json: JSON-converted body, or None
-    - is_json: whether body was in JSON
+
+    - ``status_code``: integer status code
+    - ``data``: body as bytes
+    - ``text``: body as a string
+    - ``headers``: dict of headers and their values
+    - ``cookies``: dict of cookies
+    - ``json``: JSON-converted body, or None
+    - ``is_json``: whether body was in JSON
+
+    Constructor parameter:
+
+    - ``response``: from request.
     """
 
     def __init__(self, response):
-        """Constructor parameter
-
-        - ``response`` from request.
-        """
 
         self._response = response
         self.status_code = response.status_code
@@ -231,14 +233,15 @@ class RequestFlaskResponse:
 
 
 class Client:
-    """Common class for flask authenticated testing."""
+    """Common class for flask authenticated testing.
+
+    Constructor parameters:
+
+    - ``auth`` authenticator
+    - ``default_login`` if not ``login`` is set.
+    """
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
-        """Constructor parameters.
-
-        - ``auth`` authenticator
-        - ``default_login`` if not ``login`` is set.
-        """
         self._auth = auth
         self._default_login = default_login
 
@@ -331,15 +334,16 @@ class Client:
 
 
 class RequestClient(Client):
-    """Request-based test provider."""
+    """Request-based test provider.
+
+    Constructor parameters:
+
+    - ``auth`` authenticator
+    - ``base_url`` target server
+    - ``default_login`` if not ``login`` is set.
+    """
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
-        """Constructor parameters.
-
-        - ``auth`` authenticator
-        - ``base_url`` target server
-        - ``default_login`` if not ``login`` is set.
-        """
         super().__init__(auth, default_login)
         self._base_url = base_url
         # reuse connections, otherwise it is too slow…
@@ -376,15 +380,16 @@ class RequestClient(Client):
 
 
 class FlaskClient(Client):
-    """Flask-based test provider."""
+    """Flask-based test provider.
+
+    Constructor parameters:
+
+    - ``auth`` authenticator
+    - ``client`` Flask ``test_client``
+    - ``default_login`` if not ``login`` is set.
+    """
 
     def __init__(self, auth: Authenticator, client, default_login=None):
-        """Constructor parameters.
-
-        - ``auth`` authenticator
-        - ``client`` Flask ``test_client``
-        - ``default_login`` if not ``login`` is set.
-        """
         super().__init__(auth, default_login)
         self._client = client
 
