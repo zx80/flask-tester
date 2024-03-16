@@ -4,6 +4,7 @@ SHELL	= /bin/bash
 .ONESHELL:
 
 MODULE	= FlaskTester
+VENV    = venv
 
 F.md	= $(wildcard *.md)
 F.pdf	= $(F.md:%.md=%.pdf)
@@ -11,38 +12,37 @@ F.pdf	= $(F.md:%.md=%.pdf)
 # PYTHON	= /snap/bin/pypy3
 # PYTHON	= python3
 PYTHON	= python
-PIP		= venv/bin/pip
 
 .PHONY: check check.mypy check.ruff check.pytest check.demo check.coverage check.docs
 check.mypy: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	mypy --implicit-optional --check-untyped-defs $(MODULE).py
 
 check.pyright: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	pyright $(MODULE).py
 
 # E127,W504
 check.ruff: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	ruff check --ignore=E227,E402,E501,E721,F401,F811 $(MODULE).py
 
 check.pytest: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	$(MAKE) -C tests check
 
 check.coverage: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	$(MAKE) -C tests check.coverage
 
 # MD013: line length
 check.docs:
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	pymarkdown -d MD013 scan *.md
 	sphinx-lint docs/
 
 check: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	type $(PYTHON)
 	$(MAKE) check.mypy
 	$(MAKE) check.pyright
@@ -53,7 +53,7 @@ check: venv
 
 .PHONY: docs
 docs: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	$(MAKE) -C docs html
 	find docs/_build -type d -print0 | xargs -0 chmod a+rx
 	find docs/_build -type f -print0 | xargs -0 chmod a+r
@@ -72,8 +72,9 @@ clean.venv: clean
 
 .PHONY: venv.update
 venv.update:
-	$(PIP) install -U pip
-	$(PIP) install -e .[dev,doc]
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	pip install -U pip
+	pip install -e .[dev,doc]
 
 # for local testing
 venv:
@@ -81,11 +82,12 @@ venv:
 	$(MAKE) venv.update
 
 $(MODULE).egg-info: venv
-	$(PIP) install -e .
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	pip install -e .
 
 # generate source and built distribution
 dist: venv
-	source venv/bin/activate
+	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	$(PYTHON) -m build
 
 .PHONY: publish

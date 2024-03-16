@@ -11,11 +11,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
       - name: Install dependencies
-        run: make venv.update
+        run: make VENV= venv.update
       - name: Check documentation syntax
-        run: make check.docs
+        run: make VENV= check.docs
       - name: Generate documentation
-        run: make docs
+        run: make VENV= docs
       - name: Upload to GitHub Pages
         # FIXME what is the difference with deploy below?
         uses: actions/upload-pages-artifact@v2

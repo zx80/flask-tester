@@ -12,19 +12,13 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
     steps:
-    # Setup
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    # Dependencies
     - name: Install Python Dependencies
-    #  run: make VENV= venv
-      run: |
-        pip install -U pip
-        pip install -e .[dev,doc]
-    # Checks
+      run: make VENV= venv
     - name: Check with pyright
       run: make VENV= check.pyright
     - name: Check with ruff
