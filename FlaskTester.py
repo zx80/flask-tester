@@ -26,7 +26,7 @@ class Authenticator:
 
     - ``basic``: HTTP Basic Authentication
     - ``param``: password with HTTP or JSON parameters
-    - ``bearer``: token in ``Authorization`` _bearer_ header
+    - ``bearer``: token in ``Authorization`` *bearer* header
     - ``header``: token in a header
     - ``cookie``: token in a cookie
     - ``tparam``: token in a parameter
