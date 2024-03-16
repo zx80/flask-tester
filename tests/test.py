@@ -27,17 +27,27 @@ def app(ft_client):
     # add test passwords for Calvin and Hobbes (must be consistent with app!)
     ft_client.setPass("calvin", secret.PASSES["calvin"])
     ft_client.setPass("hobbes", secret.PASSES["hobbes"])
-    # get Calvin's token, assume json result {"token": "<token-value>"}
+    # get user tokens, assume json result {"token": "<token-value>"}
     res = ft_client.get("/token", login="calvin", auth="basic", status=200)
     assert res.is_json
     ft_client.setToken("calvin", res.json["token"])
+    res = ft_client.post("/token", login="hobbes", auth="param", status=201)
+    assert res.is_json
+    ft_client.setToken("hobbes", res.json["token"])
     # return working client
     yield ft_client
 
 def test_app(app):
+    # try all authentication schemes for calvin
     app.get("/admin", login="calvin", auth="bearer", status=200)
     app.get("/admin", login="calvin", auth="basic", status=200)
+    app.get("/admin", login="calvin", auth="param", status=200)
+    # try all authentication schemes for hobbes
+    res = app.get("/admin", login="hobbes", auth="bearer", status=403)
+    assert 'not in group "ADMIN"' in res.text
     res = app.get("/admin", login="hobbes", auth="basic", status=403)
+    assert 'not in group "ADMIN"' in res.text
+    res = app.get("/admin", login="hobbes", auth="param", status=403)
     assert 'not in group "ADMIN"' in res.text
 
 @pytest.fixture
