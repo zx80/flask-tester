@@ -13,6 +13,7 @@ FLASK   = flask
 PORT    = 5000
 PYTEST  = pytest --log-level=debug --capture=tee-sys
 PYTOPT  =
+# password seed is needed on external tests for client/server sync
 SEED    := $(shell head -c 33 /dev/urandom | base64)
 
 .PHONY: check.external
@@ -29,7 +30,6 @@ check.external:
 .PHONY: check.internal
 check.internal:
 	source $(VENV)/bin/activate
-	export TEST_SEED="$(SEED)"
 	export FLASK_TESTER_APP="app:create_app"
 	$(PYTEST) $(PYTOPT) test.py
 

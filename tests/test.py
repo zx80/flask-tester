@@ -28,16 +28,16 @@ def app(ft_client):
     ft_client.setPass("calvin", secret.PASSES["calvin"])
     ft_client.setPass("hobbes", secret.PASSES["hobbes"])
     # get user tokens, assume json result {"token": "<token-value>"}
-    res = ft_client.get("/token", login="calvin", auth="basic", status=200)
+    res = ft_client.get("/login", login="calvin", auth="basic", status=200)
     assert res.is_json
     ft_client.setToken("calvin", res.json["token"])
-    res = ft_client.post("/token", login="hobbes", auth="param", status=201)
+    res = ft_client.post("/login", login="hobbes", auth="param", status=201)
     assert res.is_json
     ft_client.setToken("hobbes", res.json["token"])
     # return working client
     yield ft_client
 
-def test_app(app):
+def test_app_admin(app):
     # try all authentication schemes for calvin
     app.get("/admin", login="calvin", auth="bearer", status=200)
     app.get("/admin", login="calvin", auth="basic", status=200)
@@ -60,13 +60,13 @@ def api(ft_client):
     ft_client.setPass("moe", "bad password")
     ft_client.setToken("moe", "bad token")
     # get valid tokens using password authn
-    res = ft_client.get("/token", login="calvin", auth="basic", status=200)
+    res = ft_client.get("/login", login="calvin", auth="basic", status=200)
     assert res.json["user"] == "calvin"
     ft_client._auth.setToken("calvin", res.json["token"])
-    res = ft_client.post("/token", login="hobbes", auth="param", status=201, data={})
+    res = ft_client.post("/login", login="hobbes", auth="param", status=201, data={})
     assert res.json["user"] == "hobbes"
     ft_client._auth.setToken("hobbes", res.json["token"])
-    res = ft_client.post("/token", login="susie", auth="param", status=201, json={})
+    res = ft_client.post("/login", login="susie", auth="param", status=201, json={})
     assert res.json["user"] == "susie"
     ft_client._auth.setToken("susie", res.json["token"])
     # check that token auth is ok
@@ -100,7 +100,7 @@ def test_admin(api):
 def test_errors(api):
     for scheme in ("header", "cookie", "fake", "tparam", "unexpected"):
         try:
-            api.get("/token", login="calvin", auth=scheme)
+            api.get("/login", login="calvin", auth=scheme)
             assert False, "must raise an exception"  # pragma: no cover
         except ft.AuthError as e:
             assert True, "expected error"

@@ -13,7 +13,7 @@ USERS = ["calvin", "hobbes", "susie", "moe"]
 PASSES: dict[str, str] = {}
 
 # both client and server must share the same seed!
-random.seed(os.environ.get("TEST_SEED", "please set TEST_SEED"))
+random.seed(os.environ.get("TEST_SEED", None))
 
 # generate 4 users with pseudo-random 16-chars passwords
 for login in USERS:

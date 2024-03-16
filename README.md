@@ -22,7 +22,7 @@ achieved through environment variables.
 Install package with `pip install FlaskTester` or equivalent.
 
 The following test creates a local fixture with 2 users identified by a
-password, and retrieves a token for the first user using a `/token` route
+password, and retrieves a token for the first user using a `/login` route
 provided by the application.
 It then proceeds to run authenticated requests against the `/admin` route.
 
@@ -37,16 +37,16 @@ def app(ft_client):
     ft_client.setPass("calvin", secret.PASSES["calvin"])
     ft_client.setPass("hobbes", secret.PASSES["hobbes"])
     # get user tokens, assume json result {"token": "<token-value>"}
-    res = ft_client.get("/token", login="calvin", auth="basic", status=200)
+    res = ft_client.get("/login", login="calvin", auth="basic", status=200)
     assert res.is_json
     ft_client.setToken("calvin", res.json["token"])
-    res = ft_client.post("/token", login="hobbes", auth="param", status=201)
+    res = ft_client.post("/login", login="hobbes", auth="param", status=201)
     assert res.is_json
     ft_client.setToken("hobbes", res.json["token"])
     # return working client
     yield ft_client
 
-def test_app(app):
+def test_app_admin(app):
     # try all authentication schemes for calvin
     app.get("/admin", login="calvin", auth="bearer", status=200)
     app.get("/admin", login="calvin", auth="basic", status=200)

@@ -20,11 +20,11 @@ def user_is_admin(login: str) -> bool:
     return login in ADMINS
 
 # routes
-@app.get("/token", authorize="ALL", auth="basic")
+@app.get("/login", authorize="ALL", auth="basic")
 def get_token(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 200
 
-@app.post("/token", authorize="ALL", auth="param")
+@app.post("/login", authorize="ALL", auth="param")
 def post_token(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 201
 
