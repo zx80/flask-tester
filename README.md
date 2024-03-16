@@ -27,9 +27,9 @@ provided by the application.
 It then proceeds to run authenticated requests against the `/admin` route.
 
 ```python
-import secret
 import pytest
 from FlaskTester import ft_authenticator, ft_client
+import secret
 
 @pytest.fixture
 def app(ft_client):
