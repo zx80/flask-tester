@@ -5,7 +5,7 @@
    :maxdepth: 3
    :caption: Contents
 
-   autoapi/FlaskTester/index
+   API <autoapi/FlaskTester/index>
 
 Indices and tables
 ==================

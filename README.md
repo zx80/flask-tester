@@ -189,18 +189,9 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-## See Also, or Not
-
-- [Flask Testing](https://github.com/jarus/flask-testing) an unmaintained
-  old-style unit test for Flask 1.x, without authentication help.
-
-## TODO
-
-- API documentation generation
-
 ## Versions
 
-### 1.3 on ?
+### 1.3 on 2024-03-16
 
 Generate API documentation.
 Cleaner code.
@@ -229,3 +220,8 @@ Working coverage tests.
 ### 0.9 on 2024-03-11
 
 Initial revision extracted from a separate project.
+
+## See Also, or Not
+
+- [Flask Testing](https://github.com/jarus/flask-testing) an unmaintained
+  old-style unit test for Flask 1.x, without authentication help.
