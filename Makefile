@@ -57,6 +57,7 @@ docs: venv
 	$(MAKE) -C docs html
 	find docs/_build -type d -print0 | xargs -0 chmod a+rx
 	find docs/_build -type f -print0 | xargs -0 chmod a+r
+	chmod a+rx docs
 	ln -s docs/_build/html _site
 
 .PHONY: clean
