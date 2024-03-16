@@ -20,6 +20,8 @@ jobs:
         # FIXME what is the difference with deploy below?
         uses: actions/upload-pages-artifact@v3
   deploy:
+    environment:
+      name: github-pages
     needs: build
     permissions:
       pages: write
