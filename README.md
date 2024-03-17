@@ -22,7 +22,7 @@ achieved through environment variables.
 Install package with `pip install FlaskTester` or equivalent.
 
 The following test creates a local fixture with 2 users identified by a
-password, and retrieves a token for the first user using a `/login` route
+password, and retrieves tokens for both users using a `/login` route
 provided by the application.
 It then proceeds to run authenticated requests against the `/admin` route.
 
