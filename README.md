@@ -182,18 +182,18 @@ The implementation of these fixtures is based on five classes plus exceptions:
 
 ## License
 
-This code is public domain.
+This code is [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
 
 All software has bug, this is software, hence… Beware that you may lose your
 hairs or your friends because of it. If you like it, feel free to send a
 postcard to the author.
 
+## Versions
+
 Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
-
-## Versions
 
 ### 1.3 on 2024-03-16
 
