@@ -404,7 +404,31 @@ class FlaskClient(Client):
 
 @pytest.fixture
 def ft_authenticator():
-    """Pytest Fixture: ft_authenticator."""
+    """Pytest Fixture: ft_authenticator.
+
+    Environment variables:
+
+    - ``FLASK_TESTER_LOG_LEVEL``: package log level in
+      ``DEBUG INFO WARNING ERROR CRITICAL NOSET``.
+    - ``FLASK_TESTER_ALLOW``: allowed space-separated authentication schemes, in
+      ``basic param bearer header cookie tparam fake``.
+      Default is ``bearer basic param``.
+    - ``FLASK_TESTER_USER``: user login parameter for ``param`` authentication.
+      Default is ``USER``.
+    - ``FLASK_TESTER_PASS``: user password parameter for ``param`` authentication.
+      Default is ``PASS``.
+    - ``FLASK_TESTER_LOGIN``: user login parameter for ``fake`` authentication.
+      Default is ``LOGIN``.
+    - ``FLASK_TESTER_BEARER``: bearer name for *token* authentication.
+      Default is ``Bearer``.
+    - ``FLASK_TESTER_HEADER``: header name for *token* authentication.
+      Default is ``Auth``.
+    - ``FLASK_TESTER_COOKIE``: cookie name for *token* authentication.
+      Default is ``auth``.
+    - ``FLASK_TESTER_TPARAM``: parameter for *token* authentication.
+      Default is ``AUTH``.
+    - ``FLASK_TESTER_AUTH``: initial comma-separated list of *login:password*.
+    """
 
     level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
     log.setLevel(logging.DEBUG if level == "DEBUG" else
@@ -436,7 +460,18 @@ def ft_authenticator():
 
 @pytest.fixture
 def ft_client(ft_authenticator):
-    """Pytest Fixture: ft_client."""
+    """Pytest Fixture: ft_client.
+
+    Target environment variable, one **must** be defined:
+
+    - ``FLASK_TESTER_URL``: application HTTP base URL.
+    - ``FLASK_TESTER_APP``: Flask application, eg ``app:create_app``.
+
+    Other environment variable:
+
+    - ``FLASK_TESTER_DEFAULT``: Default client login, default is *None* for no
+      default.
+    """
 
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
@@ -461,6 +496,7 @@ def ft_client(ft_authenticator):
                 app = getattr(pkg, name)
                 if callable(app) and not hasattr(app, "test_client"):
                     app = app()
+                break
         if not app:  # pragma: no cover
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
         client = FlaskClient(ft_authenticator, app.test_client(), default_login)
