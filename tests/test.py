@@ -96,12 +96,22 @@ def test_admin(api):
         api.check("GET", "/admin", 403, login="hobbes", auth=auth)
         api.check("GET", "/admin", 401, login="moe", auth=auth)
         api.check("GET", "/admin", 401, login=None, auth=auth)
+        try:
+            api.check("GET", "/admin", status=599, login="calvin", auth=auth)
+            pytest.fail("assert on status must fail")  # pragma: no cover
+        except AssertionError as e:
+            assert "200" in str(e)
+        try:
+            api.check("GET", "/admin", status=200, login="calvin", auth=auth, content="NOT THERE")
+            pytest.fail("assert on content must fail")  # pragma: no cover
+        except AssertionError as e:
+            assert "NOT THERE" in str(e)
 
 def test_errors(api):
     for scheme in ("header", "cookie", "fake", "tparam", "unexpected"):
         try:
             api.get("/login", login="calvin", auth=scheme)
-            assert False, "must raise an exception"  # pragma: no cover
+            pytest.fail("must raise an exception")  # pragma: no cover
         except ft.AuthError as e:
             assert True, "expected error"
 
@@ -138,13 +148,13 @@ def test_authenticator_token():
     try:
         kwargs = {}
         auth.setAuth("dad", kwargs)
-        assert False, "must raise an error"  # pragma: no cover
+        pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
     # rosalyn as a password, but no password carrier is allowed
     try:
         auth.setPass("rosalyn", "rsln-pass")
-        assert False, "must raise an error"  # pragma: no cover
+        pytest.fail("must raise an error")  # pragma: no cover
     except ft.AuthError:
         assert True, "error raised"
     # force to trigger later errors
@@ -153,7 +163,7 @@ def test_authenticator_token():
     try:
         kwargs={}
         auth.setAuth("rosalyn", kwargs)
-        assert False, "must raise an error"  # pragma: no cover
+        pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
 
@@ -182,7 +192,7 @@ def test_authenticator_password():
     # susie as a token, but no token carrier is allowed
     try:
         auth.setToken("susie", "ss-token")
-        assert False, "must raise an error"  # pragma: no cover
+        pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
     # force to trigger later error
@@ -191,7 +201,7 @@ def test_authenticator_password():
     try:
         kwargs={}
         auth.setAuth("susie", kwargs)
-        assert False, "must raise an error"  # pragma: no cover
+        pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
 
@@ -224,9 +234,9 @@ def test_client():
     client = ft.Client(ft.Authenticator())
     try:
         client._request("GET", "/")
-        assert False, "must raise an error"  # pragma: no cover
+        pytest.fail("must raise an error")  # pragma: no cover
     except NotImplementedError:
-        assert True, "error raised"
+        assert True, "expected error raised"
 
 def test_request_client():
     httpd = htsv.HTTPServer(("", 8888), htsv.SimpleHTTPRequestHandler)

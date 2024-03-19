@@ -8,6 +8,11 @@ import pytest
 
 log = logging.getLogger("flask_tester")
 
+"""FlaskTester - Pytest fixtures for Flask authenticated internal and external tests.
+
+Pytest: PYTEST_DONT_REWRITE
+"""
+
 
 class FlaskTesterError(BaseException):
     """Base exception for FlaskTester package."""
@@ -283,9 +288,9 @@ class Client:
         res = self._request(method, path, **kwargs)  # type: ignore
 
         if status is not None:
-            if res.status_code != status:  # pragma: no cover  # show error before aborting
+            if res.status_code != status:  # show error before aborting
                 log.error(f"bad {status} result: {res.status_code} {res.text[:512]}")
-            assert res.status_code == status
+            assert res.status_code == status, f"unexpected status {res.status_code}, expecting {status}"
 
         return res
 
@@ -330,9 +335,9 @@ class Client:
 
         # check contents
         if content is not None:
-            if not re.search(content, res.text, re.DOTALL):  # pragma: no cover
+            if not re.search(content, res.text, re.DOTALL):
                 log.error(f"cannot find {content} in {res.text}")
-                assert False, "content not found"
+                assert False, f"expected content {content} not found in {res.text}"
 
         return res
 
