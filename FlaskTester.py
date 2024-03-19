@@ -1,3 +1,8 @@
+"""FlaskTester - Pytest fixtures for Flask authenticated internal and external tests.
+
+Pytest: PYTEST_DONT_REWRITE
+"""
+
 import os
 import io
 import re
@@ -7,11 +12,6 @@ import logging
 import pytest
 
 log = logging.getLogger("flask_tester")
-
-"""FlaskTester - Pytest fixtures for Flask authenticated internal and external tests.
-
-Pytest: PYTEST_DONT_REWRITE
-"""
 
 
 class FlaskTesterError(BaseException):
