@@ -197,6 +197,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ### ? on ?
 
+Test expected assert failures.
 Improved API documentation.
 Keep first found app.
 
