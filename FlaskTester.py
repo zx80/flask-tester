@@ -60,6 +60,7 @@ class Authenticator:
     _TOKEN_SCHEMES = {"bearer", "header", "cookie", "tparam"}
     _PASS_SCHEMES = {"basic", "param"}
 
+    # all supported authentication schemes
     _AUTH_SCHEMES = {"fake"}
     _AUTH_SCHEMES.update(_TOKEN_SCHEMES)
     _AUTH_SCHEMES.update(_PASS_SCHEMES)
@@ -110,7 +111,10 @@ class Authenticator:
             store[login] = val
 
     def setPass(self, login: str, pw: str|None):
-        """Associate a password to a user."""
+        """Associate a password to a user.
+
+        Set to *None* to remove the password entry.
+        """
         if not self._has_pass:
             raise AuthError("cannot set password, no password scheme allowed")
         self._set(login, pw, self._passes)
@@ -122,7 +126,10 @@ class Authenticator:
             self.setPass(login, pw)
 
     def setToken(self, login: str, token: str|None):
-        """Associate a token to a user."""
+        """Associate a token to a user.
+
+        Set to *None* to remove the token entry.
+        """
         if not self._has_token:
             raise AuthError("cannot set token, no token scheme allowed")
         self._set(login, token, self._tokens)
@@ -148,7 +155,10 @@ class Authenticator:
 
         - login: login target, None means no authentication
         - kwargs: request parameters
-        - auth: authentication method, default None is to try allowed schemes, tokens first.
+        - auth: authentication method, default is None
+
+        The default behavior is to try allowed schemes: tokens first,
+        then password, then fake.
         """
 
         log.debug(f"setAuth: login={login} auth={auth} allow={self._allow}")
@@ -274,7 +284,7 @@ class Client:
 
         - ``status``: expected HTTP status, *None* to skip status check
         - ``login``: authenticated user, use **explicit** *None* to skip
-        - ``auth``: authentication scheme to use
+        - ``auth``: authentication scheme to use instead of default behavior
         - ``**kwargs``: more request parameters (headers, data, json…)
         """
 
