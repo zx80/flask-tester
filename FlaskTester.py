@@ -248,12 +248,12 @@ class RequestFlaskResponse:
 
 
 class Client:
-    """Common class for flask authenticated testing.
+    """Common (partial) class for flask authenticated testing.
 
     Constructor parameters:
 
     - ``auth`` authenticator
-    - ``default_login`` if not ``login`` is set.
+    - ``default_login`` if ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
@@ -359,7 +359,7 @@ class RequestClient(Client):
 
     - ``auth`` authenticator
     - ``base_url`` target server
-    - ``default_login`` if not ``login`` is set.
+    - ``default_login`` if ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
@@ -404,8 +404,8 @@ class FlaskClient(Client):
     Constructor parameters:
 
     - ``auth`` authenticator
-    - ``client`` Flask ``test_client``
-    - ``default_login`` if not ``login`` is set.
+    - ``client`` Flask actual ``test_client``
+    - ``default_login`` if ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, client, default_login=None):
@@ -425,6 +425,7 @@ def ft_authenticator():
 
     - ``FLASK_TESTER_LOG_LEVEL``: package log level in
       ``DEBUG INFO WARNING ERROR CRITICAL NOSET``.
+      Default is ``NOTSET``.
     - ``FLASK_TESTER_ALLOW``: allowed space-separated authentication schemes, in
       ``basic param bearer header cookie tparam fake``.
       Default is ``bearer basic param``.
@@ -443,6 +444,7 @@ def ft_authenticator():
     - ``FLASK_TESTER_TPARAM``: parameter for *token* authentication.
       Default is ``AUTH``.
     - ``FLASK_TESTER_AUTH``: initial comma-separated list of *login:password*.
+      Default is not set.
     """
 
     level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
