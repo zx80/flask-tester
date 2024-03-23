@@ -9,7 +9,7 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
-![Tests](https://img.shields.io/badge/tests-10%20✓-success)
+![Tests](https://img.shields.io/badge/tests-11%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
@@ -93,7 +93,7 @@ The package provides two fixtures:
 - `ft_authenticator` for app authentication, which depends on environment variables:
 
   - `FLASK_TESTER_ALLOW` space-separated list of allowed authentication schemes,
-    default is `["bearer", "basic", "param"]`.
+    default is `["bearer", "basic", "param", "none"]`.
   - `FLASK_TESTER_AUTH` comma-separated list of _login:password_ credentials.
   - `FLASK_TESTER_USER` user login parameter for `param` password authentication,
     default is `USER`.
@@ -116,7 +116,7 @@ The package provides two fixtures:
   - `setPass` to associate a password to a user, set to _None_ to remove credential.
   - `setToken` to associate a token to a user, set to _None_ to remove credential.
   - `setCookie` to add a cookie to a user, set value to _None_ to remove cookie.
-  - `setAuth` to add authentication data to a request `kwargs`.
+  - `setAuth` to add authentication data to a request `kwargs` and `cookies`.
 
 - `ft_client` for app testing, which depends on the previous fixture, plus
   environment variables which allow to find the application, at least one must
@@ -198,6 +198,10 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
+
+### ? on ?
+
+Add support for `none` authentication, with only cookies.
 
 ### 2.0 on 2024-03-23
 

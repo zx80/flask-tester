@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 # set authn for ft_authenticator
 os.environ.update(
-    FLASK_TESTER_ALLOW="bearer basic param",
+    FLASK_TESTER_ALLOW="bearer basic param none",
     FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in secret.PASSES.items()),
 )
 
@@ -66,8 +66,8 @@ def api(ft_client):
     ft_client.setPass("moe", "bad password")
     ft_client.setToken("moe", "bad token")
     # cookies
-    ft_client.setCookie("calvin", "lang", "en_EN")
-    ft_client.setCookie("hobbes", "lang", "fr_FR")
+    ft_client.setCookie("calvin", "lang", "en")
+    ft_client.setCookie("hobbes", "lang", "fr")
     # get valid tokens using password authn
     res = ft_client.get("/login", login="calvin", auth="basic", status=200)
     assert res.json["user"] == "calvin"
@@ -78,11 +78,12 @@ def api(ft_client):
     res = ft_client.post("/login", login="susie", auth="param", status=201, json={})
     assert res.json["user"] == "susie"
     ft_client._auth.setToken("susie", res.json["token"])
+    ft_client.get("/login", login="calvin", auth="none", status=401)
     # check that token auth and cookie is ok
     res = ft_client.get("/who-am-i", login="calvin", status=200, auth="bearer")
-    assert res.json["user"] == "calvin" and res.json["lang"] == "en_EN"
+    assert res.json["user"] == "calvin" and res.json["lang"] == "en"
     res = ft_client.get("/who-am-i", login="hobbes", status=200, auth="bearer")
-    assert res.json["user"] == "hobbes" and res.json["lang"] == "fr_FR"
+    assert res.json["user"] == "hobbes" and res.json["lang"] == "fr"
     res = ft_client.get("/who-am-i", login="susie", status=200, auth="bearer")
     assert res.json["user"] == "susie" and res.json["lang"] is None
     # with defaults
@@ -117,6 +118,7 @@ def test_admin(api):
             assert "NOT THERE" in str(e)
 
 def test_errors(api):
+    # these schemes are not allowed
     for scheme in ("header", "cookie", "fake", "tparam", "unexpected"):
         try:
             api.get("/login", login="calvin", auth=scheme)
@@ -125,12 +127,26 @@ def test_errors(api):
             assert True, "expected error"
 
 def test_methods(api):
-    res = api.get("/who-am-i", login="susie", status=200, cookies={"lang": "python"})
-    assert res.json["lang"] == "python"
+    res = api.get("/who-am-i", login="susie", status=200, cookies={"lang": "it"})
+    assert res.json["lang"] == "it"
     api.post("/who-am-i", login="hobbes", status=405)
     api.put("/who-am-i", login="hobbes", status=405)
     api.patch("/who-am-i", login="hobbes", status=405)
     api.delete("/who-am-i", login="hobbes", status=405)
+
+def test_hello(api):
+    res = api.get("/hello", login="calvin", auth="none", status=200)
+    assert res.json["hello"] == "Hi"
+    assert res.headers["FSA-User"] == "None (None)"
+    res = api.get("/hello", login="hobbes", auth="none", status=200)
+    assert res.json["hello"] == "Salut"
+    assert res.headers["FSA-User"] == "None (None)"
+    res = api.get("/hello", login="susie", auth="none", status=200, cookies={"lang": "it"})
+    assert res.json["hello"] == "Ciao"
+    assert res.headers["FSA-User"] == "None (None)"
+    res = api.get("/hello", login="moe", auth="none", status=200)
+    assert res.json["hello"] == "Hi"
+    assert res.headers["FSA-User"] == "None (None)"
 
 def test_authenticator_token():
     # all token carriers

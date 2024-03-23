@@ -35,6 +35,13 @@ def get_who_am_i(user: fsa.CurrentUser, lang: fsa.Cookie = None):
 def get_admin(user: fsa.CurrentUser):
     return {"user": user, "isadmin": True}, 200
 
+# incredible open service for top-notch translations
+HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi"}
+
+@app.get("/hello", authorize="ANY")
+def get_hello(lang: fsa.Cookie = "en"):
+    return {"lang": lang, "hello": HELLO.get(lang, "Hi")}, 200
+
 # for coverage
 def create_app():
     return app

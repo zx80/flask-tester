@@ -36,11 +36,12 @@ class Authenticator:
     - ``cookie``: token in a cookie
     - ``tparam``: token in a parameter
     - ``fake``: fake scheme, login directly passed as a parameter
+    - ``none``: no authentication, only cookies
 
     Constructor parameters:
 
     - ``allow``: list of allowed schemes.
-      default is ``["bearer", "basic", "param"]``
+      default is ``["bearer", "basic", "param", "none"]``
     - ``user``: parameter for user on ``param`` password authentication,
       default is ``USER``
     - ``pwd``: parameter for password on ``param`` password authentication,
@@ -61,12 +62,12 @@ class Authenticator:
     _PASS_SCHEMES = {"basic", "param"}
 
     # all supported authentication schemes
-    _AUTH_SCHEMES = {"fake"}
+    _AUTH_SCHEMES = {"fake", "none"}
     _AUTH_SCHEMES.update(_TOKEN_SCHEMES)
     _AUTH_SCHEMES.update(_PASS_SCHEMES)
 
     def __init__(self,
-             allow: list[str] = ["bearer", "basic", "param"],
+             allow: list[str] = ["bearer", "basic", "param", "none"],
              # parameter names for "basic" and "param"
              user: str = "USER",
              pwd: str = "PASS",
@@ -213,6 +214,10 @@ class Authenticator:
         elif self._try_auth(auth, "fake"):
 
             self._param(kwargs, self._login, login)
+
+        elif self._try_auth(auth, "none"):
+
+            pass
 
         else:
 
@@ -461,7 +466,7 @@ def ft_authenticator():
       ``DEBUG INFO WARNING ERROR CRITICAL NOSET``.
       Default is ``NOTSET``.
     - ``FLASK_TESTER_ALLOW``: allowed space-separated authentication schemes, in
-      ``basic param bearer header cookie tparam fake``.
+      ``basic param bearer header cookie tparam fake none``.
       Default is ``bearer basic param``.
     - ``FLASK_TESTER_USER``: user login parameter for ``param`` authentication.
       Default is ``USER``.
