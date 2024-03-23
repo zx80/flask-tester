@@ -199,7 +199,7 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-### ? on ?
+### 3.0 on ?
 
 Add support for `none` authentication, with only cookies.
 
