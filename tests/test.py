@@ -10,6 +10,8 @@ import io
 import logging
 
 logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.DEBUG)
+# log = logging.getLogger("test")
 
 # set authn for ft_authenticator
 os.environ.update(
@@ -20,6 +22,7 @@ os.environ.update(
 def test_sanity():
     # must provide url or package of Flask application to test
     assert "FLASK_TESTER_URL" in os.environ or "FLASK_TESTER_APP" in os.environ
+    # log.debug(f"TEST_SEED={os.environ.get('TEST_SEED')}")
 
 # example from README.md
 @pytest.fixture
@@ -34,6 +37,9 @@ def app(ft_client):
     res = ft_client.post("/login", login="hobbes", auth="param", status=201)
     assert res.is_json
     ft_client.setToken("hobbes", res.json["token"])
+    # also set a cookie
+    ft_client.setCookie("hobbes", "lang", "fr_FR")
+    ft_client.setCookie("calvin", "lang", "en_EN")
     # return working client
     yield ft_client
 
@@ -59,6 +65,9 @@ def api(ft_client):
     ft_client.setToken("moe", None)
     ft_client.setPass("moe", "bad password")
     ft_client.setToken("moe", "bad token")
+    # cookies
+    ft_client.setCookie("calvin", "lang", "en_EN")
+    ft_client.setCookie("hobbes", "lang", "fr_FR")
     # get valid tokens using password authn
     res = ft_client.get("/login", login="calvin", auth="basic", status=200)
     assert res.json["user"] == "calvin"
@@ -69,13 +78,13 @@ def api(ft_client):
     res = ft_client.post("/login", login="susie", auth="param", status=201, json={})
     assert res.json["user"] == "susie"
     ft_client._auth.setToken("susie", res.json["token"])
-    # check that token auth is ok
+    # check that token auth and cookie is ok
     res = ft_client.get("/who-am-i", login="calvin", status=200, auth="bearer")
-    assert res.json["user"] == "calvin"
+    assert res.json["user"] == "calvin" and res.json["lang"] == "en_EN"
     res = ft_client.get("/who-am-i", login="hobbes", status=200, auth="bearer")
-    assert res.json["user"] == "hobbes"
+    assert res.json["user"] == "hobbes" and res.json["lang"] == "fr_FR"
     res = ft_client.get("/who-am-i", login="susie", status=200, auth="bearer")
-    assert res.json["user"] == "susie"
+    assert res.json["user"] == "susie" and res.json["lang"] is None
     # with defaults
     res = ft_client.get("/who-am-i", auth="basic", status=200)
     assert res.json["user"] == "calvin"
@@ -116,7 +125,8 @@ def test_errors(api):
             assert True, "expected error"
 
 def test_methods(api):
-    api.get("/who-am-i", login="hobbes", status=200)
+    res = api.get("/who-am-i", login="susie", status=200, cookies={"lang": "python"})
+    assert res.json["lang"] == "python"
     api.post("/who-am-i", login="hobbes", status=405)
     api.put("/who-am-i", login="hobbes", status=405)
     api.patch("/who-am-i", login="hobbes", status=405)
@@ -129,25 +139,31 @@ def test_authenticator_token():
     auth.setToken("susie", "ss-token")
     auth.setToken("hobbes", "hbs-token")
     auth.setToken("moe", "m-token")
-    kwargs = {}
-    auth.setAuth("calvin", kwargs, auth="bearer")
+    auth.setCookie("calvin", "what", "clv-cookie")
+    kwargs, cookies = {}, {}
+    auth.setAuth("calvin", kwargs, cookies, auth="bearer")
     assert kwargs["headers"]["Authorization"] == "Bearer clv-token"
-    kwargs = {}
-    auth.setAuth("susie", kwargs, auth="header")
+    assert cookies["what"] == "clv-cookie"
+    kwargs, cookies = {}, {}
+    auth.setAuth("susie", kwargs, cookies, auth="header")
     assert kwargs["headers"]["Auth"] == "ss-token"
-    kwargs = {"data": {}}
-    auth.setAuth("hobbes", kwargs, auth="tparam")
+    assert not cookies
+    kwargs, cookies = {"data": {}}, {}
+    auth.setAuth("hobbes", kwargs, cookies, auth="tparam")
     assert kwargs["data"]["AUTH"] == "hbs-token"
-    kwargs = {"json": {}}
-    auth.setAuth("hobbes", kwargs, auth="tparam")
+    assert not cookies
+    kwargs, cookies = {"json": {}}, {}
+    auth.setAuth("hobbes", kwargs, cookies, auth="tparam")
     assert kwargs["json"]["AUTH"] == "hbs-token"
-    kwargs = {}
-    auth.setAuth("moe", kwargs, auth="cookie")
-    assert kwargs["headers"]["Cookie"] == "auth=m-token"
+    assert not cookies
+    kwargs, cookies = {}, {}
+    auth.setAuth("moe", kwargs, cookies, auth="cookie")
+    assert not kwargs
+    assert cookies["auth"] == "m-token"
     # dad does not have a token
     try:
-        kwargs = {}
-        auth.setAuth("dad", kwargs)
+        kwargs, cookies = {}, {}
+        auth.setAuth("dad", kwargs, cookies)
         pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
@@ -161,8 +177,8 @@ def test_authenticator_token():
     auth._has_pass = True
     auth.setPass("rosalyn", "rsln-pass")
     try:
-        kwargs={}
-        auth.setAuth("rosalyn", kwargs)
+        kwargs, cookies = {}, {}
+        auth.setAuth("rosalyn", kwargs, cookies)
         pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
@@ -174,21 +190,27 @@ def test_authenticator_password():
     auth.setPass("hobbes", "hbs-pass")
     auth.setPass("moe", "m-pass")
     auth.setPass("rosalyn", "rsln-pass")
-    kwargs = {}
-    auth.setAuth("calvin", kwargs, auth="basic")
+    auth.setCookie("moe", "hello", "world!")
+    kwargs, cookies = {}, {}
+    auth.setAuth("calvin", kwargs, cookies, auth="basic")
     assert kwargs["auth"] == ("calvin", "clv-pass")
-    kwargs = {"data": {}}
-    auth.setAuth("hobbes", kwargs, auth="param")
+    assert not cookies
+    kwargs, cookies = {"data": {}}, {}
+    auth.setAuth("hobbes", kwargs, cookies, auth="param")
     assert kwargs["data"]["USER"] == "hobbes" and kwargs["data"]["PASS"] == "hbs-pass"
-    kwargs = {"json": {}}
-    auth.setAuth("moe", kwargs, auth="param")
+    assert not cookies
+    kwargs, cookies = {"json": {}}, {}
+    auth.setAuth("moe", kwargs, cookies, auth="param")
     assert kwargs["json"]["USER"] == "moe" and kwargs["json"]["PASS"] == "m-pass"
-    kwargs = {"data": {}}
-    auth.setAuth("rosalyn", kwargs, auth="fake")
+    assert cookies["hello"] == "world!"
+    kwargs, cookies = {"data": {}}, {}
+    auth.setAuth("rosalyn", kwargs, cookies, auth="fake")
     assert kwargs["data"]["LOGIN"] == "rosalyn"
-    kwargs = {"json": {}}
-    auth.setAuth("hobbes", kwargs, auth="fake")
+    assert not cookies
+    kwargs, cookies = {"json": {}}, {}
+    auth.setAuth("hobbes", kwargs, cookies, auth="fake")
     assert kwargs["json"]["LOGIN"] == "hobbes"
+    assert not cookies
     # susie as a token, but no token carrier is allowed
     try:
         auth.setToken("susie", "ss-token")
@@ -199,8 +221,8 @@ def test_authenticator_password():
     auth._has_token = True
     auth.setToken("susie", "ss-token")
     try:
-        kwargs={}
-        auth.setAuth("susie", kwargs)
+        kwargs, cookies = {}, {}
+        auth.setAuth("susie", kwargs, cookies)
         pytest.fail("must raise an error")  # pragma: no cover
     except ft.FlaskTesterError:
         assert True, "error raised"
@@ -233,7 +255,7 @@ def test_request_flask_response():
 def test_client():
     client = ft.Client(ft.Authenticator())
     try:
-        client._request("GET", "/")
+        client._request("GET", "/", {})
         pytest.fail("must raise an error")  # pragma: no cover
     except NotImplementedError:
         assert True, "expected error raised"

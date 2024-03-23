@@ -43,6 +43,9 @@ def app(ft_client):
     res = ft_client.post("/login", login="hobbes", auth="param", status=201)
     assert res.is_json
     ft_client.setToken("hobbes", res.json["token"])
+    # also set a cookie
+    ft_client.setCookie("hobbes", "lang", "fr_FR")
+    ft_client.setCookie("calvin", "lang", "en_EN")
     # return working client
     yield ft_client
 
@@ -112,6 +115,7 @@ The package provides two fixtures:
   The fixture has 3 main methods:
   - `setPass` to associate a password to a user, set to _None_ to remove credential.
   - `setToken` to associate a token to a user, set to _None_ to remove credential.
+  - `setCookie` to add a cookie to a user, set value to _None_ to remove cookie.
   - `setAuth` to add authentication data to a request `kwargs`.
 
 - `ft_client` for app testing, which depends on the previous fixture, plus
@@ -132,7 +136,7 @@ The package provides two fixtures:
   The fixture then provides test methods to issue test requests against a Flask application:
   - `request` generic request with `login`, `auth`, `status` end `content` extensions.
   - `get post put patch delete` methods with `login`, `auth` and `status` extensions.
-  Moreover, `setPass` and `setToken` are forwarded to the internal authenticator.
+  Moreover, `setPass`, `setToken` and `setCookie` are forwarded to the internal authenticator.
 
 Authenticator environment variables can be set from the pytest Python test file by
 assigning them through `os.environ`.
@@ -194,6 +198,12 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
+
+### 2.0 on 2024-03-23
+
+Add support for cookies.
+Improved documentation and code.
+Improved tests.
 
 ### 1.4 on 2024-03-19
 

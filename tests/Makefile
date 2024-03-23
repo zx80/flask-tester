@@ -15,6 +15,7 @@ PYTEST  = pytest --log-level=debug --capture=tee-sys
 PYTOPT  =
 # password seed is needed on external tests for client/server sync
 SEED    := $(shell head -c 33 /dev/urandom | base64)
+# SEED    = "test-seed"
 
 .PHONY: check.external
 check.external:

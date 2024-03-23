@@ -28,8 +28,8 @@ def post_token(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 201
 
 @app.get("/who-am-i", authorize="ALL")
-def get_who_am_i(user: fsa.CurrentUser):
-    return {"user": user, "isadmin": user_is_admin(user)}, 200
+def get_who_am_i(user: fsa.CurrentUser, lang: fsa.Cookie = None):
+    return {"user": user, "isadmin": user_is_admin(user), "lang": lang}, 200
 
 @app.get("/admin", authorize="ADMIN")
 def get_admin(user: fsa.CurrentUser):

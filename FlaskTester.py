@@ -97,18 +97,19 @@ class Authenticator:
         self._cookie = cookie
         self._tparam = tparam
 
-        # password and token credentials
+        # password and token credentials, cookies
         self._passes: dict[str, str] = {}
         self._tokens: dict[str, str] = {}
+        self._cookies: dict[str, dict[str, str]] = {}
 
-    def _set(self, login: str, val: str|None, store: dict[str, str]):
+    def _set(self, key: str, val: str|None, store: dict[str, str]):
         """Set a key/value in a directory, with None for delete."""
         if val is None:
-            if login in store:
-                del store[login]
+            if key in store:
+                del store[key]
         else:
             assert isinstance(val, str)
-            store[login] = val
+            store[key] = val
 
     def setPass(self, login: str, pw: str|None):
         """Associate a password to a user.
@@ -134,6 +135,12 @@ class Authenticator:
             raise AuthError("cannot set token, no token scheme allowed")
         self._set(login, token, self._tokens)
 
+    def setCookie(self, login: str, name: str, val: str|None = None):
+        """Associate a cookie and its value to a login, *None* to remove."""
+        if login not in self._cookies:
+            self._cookies[login] = {}
+        self._set(name, val, self._cookies[login])
+
     def _param(self, kwargs: dict[str, Any], key: str, val: Any):
         """Add request parameter to "json" or "data"."""
 
@@ -150,11 +157,12 @@ class Authenticator:
         """Whether to try this authentication scheme."""
         return auth in (None, scheme) and scheme in self._allow
 
-    def setAuth(self, login: str|None, kwargs: dict[str, Any], auth: str|None = None):
+    def setAuth(self, login: str|None, kwargs: dict[str, Any], cookies: dict[str, str], auth: str|None = None):
         """Set request authentication.
 
         - login: login target, None means no authentication
         - kwargs: request parameters
+        - cookies: request cookies
         - auth: authentication method, default is None
 
         The default behavior is to try allowed schemes: tokens first,
@@ -166,29 +174,29 @@ class Authenticator:
         if login is None:  # not needed
             return
 
+        cookies.update(self._cookies.get(login, {}))
+
         if auth is not None:
             if auth not in self._AUTH_SCHEMES:
                 raise AuthError(f"unexpected auth: {auth}")
             if auth not in self._allow:
                 raise AuthError(f"auth is not allowed: {auth}")
 
+        headers = kwargs.get("headers", {})
+
         # use token if available and allowed
         if login in self._tokens and auth in (None, "bearer", "header", "cookie", "tparam"):
 
             token = self._tokens[login]
 
-            if "headers" not in kwargs:
-                kwargs["headers"] = {}
-
             if self._try_auth(auth, "bearer"):
-                kwargs["headers"]["Authorization"] = self._bearer + " " + token
+                headers["Authorization"] = self._bearer + " " + token
             elif self._try_auth(auth, "header"):
-                kwargs["headers"][self._header] = token
+                headers[self._header] = token
             elif self._try_auth(auth, "tparam"):
                 self._param(kwargs, self._tparam, token)
             elif self._try_auth(auth, "cookie"):
-                # FIXME cookie?
-                kwargs["headers"]["Cookie"] = self._cookie + "=" + token
+                cookies[self._cookie] = token
             else:
                 raise AuthError(f"no token carrier: login={login} auth={auth} allow={self._allow}")
 
@@ -209,6 +217,9 @@ class Authenticator:
         else:
 
             raise AuthError(f"no authentication for login={login} auth={auth} allow={self._allow}")
+
+        if headers:  # put headers back if needed
+            kwargs["headers"] = headers
 
 
 class RequestFlaskResponse:
@@ -258,6 +269,7 @@ class Client:
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
         self._auth = auth
+        self._cookies: dict[str, dict[str, str]] = {}  # login -> name -> value
         self._default_login = default_login
 
     def setToken(self, login: str, token: str|None):
@@ -268,7 +280,11 @@ class Client:
         """Associate a password to a login, *None* to remove."""
         self._auth.setPass(login, password)
 
-    def _request(self, method: str, path: str, **kwargs):
+    def setCookie(self, login: str, name: str, val: str|None):
+        """Associate a cookie to a login, *None* name to remove."""
+        self._auth.setCookie(login, name, val)
+
+    def _request(self, method: str, path: str, cookies: dict[str, str], **kwargs):
         """Run a request and return response."""
         raise NotImplementedError()
 
@@ -294,8 +310,13 @@ class Client:
         else:  # if unset, use default
             login = self._default_login
 
-        self._auth.setAuth(login, kwargs, auth=auth)
-        res = self._request(method, path, **kwargs)  # type: ignore
+        cookies: dict[str, str] = {}
+        if "cookies" in kwargs:
+            cookies.update(kwargs["cookies"])
+            del kwargs["cookies"]
+
+        self._auth.setAuth(login, kwargs, cookies, auth=auth)
+        res = self._request(method, path, cookies, **kwargs)  # type: ignore
 
         if status is not None:
             if res.status_code != status:  # show error before aborting
@@ -369,7 +390,7 @@ class RequestClient(Client):
         from requests import Session
         self._requests = Session()
 
-    def _request(self, method: str, path: str, **kwargs):
+    def _request(self, method: str, path: str, cookies: dict[str, str], **kwargs):
         """Actual request handling."""
 
         if "data" in kwargs:
@@ -393,7 +414,7 @@ class RequestClient(Client):
             # sanity
             assert not (files and "json" in kwargs), "cannot mix file upload and json?"
 
-        res = self._requests.request(method, self._base_url + path, **kwargs)
+        res = self._requests.request(method, self._base_url + path, cookies=cookies, **kwargs)
 
         return RequestFlaskResponse(res)
 
@@ -406,14 +427,27 @@ class FlaskClient(Client):
     - ``auth`` authenticator
     - ``client`` Flask actual ``test_client``
     - ``default_login`` if ``login`` is not set.
+
+    Note: this client handles `cookies`.
     """
 
     def __init__(self, auth: Authenticator, client, default_login=None):
         super().__init__(auth, default_login)
         self._client = client
+        self._cookie_names: set[str] = set()  # FIXME all encountered cookies for cleanup :-/
 
-    def _request(self, method: str, path: str, **kwargs):
+    def _request(self, method: str, path: str, cookies: dict[str, str], **kwargs):
         """Actual request handling."""
+
+        # hack to cleanup client state :-/
+        for cookie in self._cookie_names:
+            self._client.delete_cookie(cookie)
+
+        for cookie, val in cookies.items():
+            if cookie not in self._cookie_names:
+                self._cookie_names.add(cookie)
+            self._client.set_cookie(cookie, val)
+
         return self._client.open(method=method, path=path, **kwargs)
 
 
