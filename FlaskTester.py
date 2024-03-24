@@ -486,7 +486,7 @@ def ft_authenticator():
       Default is ``NOTSET``.
     - ``FLASK_TESTER_ALLOW``: allowed space-separated authentication schemes, in
       ``basic param bearer header cookie tparam fake none``.
-      Default is ``bearer basic param``.
+      Default is ``bearer basic param none``.
     - ``FLASK_TESTER_USER``: user login parameter for ``param`` authentication.
       Default is ``USER``.
     - ``FLASK_TESTER_PASS``: user password parameter for ``param`` authentication.
