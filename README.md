@@ -44,8 +44,8 @@ def app(ft_client):
     assert res.is_json
     ft_client.setToken("hobbes", res.json["token"])
     # also set a cookie
-    ft_client.setCookie("hobbes", "lang", "fr_FR")
-    ft_client.setCookie("calvin", "lang", "en_EN")
+    ft_client.setCookie("hobbes", "lang", "fr")
+    ft_client.setCookie("calvin", "lang", "en")
     # return working client
     yield ft_client
 

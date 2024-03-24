@@ -38,8 +38,8 @@ def app(ft_client):
     assert res.is_json
     ft_client.setToken("hobbes", res.json["token"])
     # also set a cookie
-    ft_client.setCookie("hobbes", "lang", "fr_FR")
-    ft_client.setCookie("calvin", "lang", "en_EN")
+    ft_client.setCookie("hobbes", "lang", "fr")
+    ft_client.setCookie("calvin", "lang", "en")
     # return working client
     yield ft_client
 
@@ -136,16 +136,16 @@ def test_methods(api):
 
 def test_hello(api):
     res = api.get("/hello", login="calvin", auth="none", status=200)
-    assert res.json["hello"] == "Hi"
+    assert res.json["lang"] == "en" and res.json["hello"] == "Hi"
     assert res.headers["FSA-User"] == "None (None)"
     res = api.get("/hello", login="hobbes", auth="none", status=200)
-    assert res.json["hello"] == "Salut"
+    assert res.json["lang"] == "fr" and res.json["hello"] == "Salut"
     assert res.headers["FSA-User"] == "None (None)"
     res = api.get("/hello", login="susie", auth="none", status=200, cookies={"lang": "it"})
-    assert res.json["hello"] == "Ciao"
+    assert res.json["lang"] == "it" and res.json["hello"] == "Ciao"
     assert res.headers["FSA-User"] == "None (None)"
     res = api.get("/hello", login="moe", auth="none", status=200)
-    assert res.json["hello"] == "Hi"
+    assert res.json["lang"] == "en" and res.json["hello"] == "Hi"
     assert res.headers["FSA-User"] == "None (None)"
 
 def test_authenticator_token():
@@ -269,6 +269,7 @@ def test_request_flask_response():
     assert not xres.is_json and xres.json is None
 
 def test_client():
+    # abstract class for coverage
     client = ft.Client(ft.Authenticator())
     try:
         client._request("GET", "/", {})
@@ -277,6 +278,7 @@ def test_client():
         assert True, "expected error raised"
 
 def test_request_client():
+    # start a tmp server on port 8888 for URL client coverage
     httpd = htsv.HTTPServer(("", 8888), htsv.SimpleHTTPRequestHandler)
     thread = threading.Thread(target = lambda: httpd.serve_forever())
     thread.start()
