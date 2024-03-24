@@ -43,6 +43,6 @@ HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi"}
 def get_hello(lang: fsa.Cookie = "en"):
     return {"lang": lang, "hello": HELLO.get(lang, "Hi")}, 200
 
-# for coverage
+# only for coverage
 def create_app():
     return app
