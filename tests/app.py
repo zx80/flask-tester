@@ -18,15 +18,16 @@ ADMINS: set[str] = {"calvin", "susie"}
 def user_is_admin(login: str) -> bool:
     return login in ADMINS
 
-# routes
+# login routes
 @app.get("/login", authorize="ALL", auth="basic")
-def get_token(user: fsa.CurrentUser):
+def get_login(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 200
 
 @app.post("/login", authorize="ALL", auth="param")
-def post_token(user: fsa.CurrentUser):
+def post_login(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 201
 
+# identity routes
 @app.get("/who-am-i", authorize="ALL")
 def get_who_am_i(user: fsa.CurrentUser, lang: fsa.Cookie = None):
     return {"user": user, "isadmin": user_is_admin(user), "lang": lang}, 200
