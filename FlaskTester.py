@@ -293,7 +293,8 @@ class Client:
         """Run a request and return response."""
         raise NotImplementedError()
 
-    def request(self, method: str, path: str, status: int|None = None, auth: str|None = None, **kwargs):
+    def request(self, method: str, path: str, status: int|None = None, content: str|None = None,
+                auth: str|None = None, **kwargs):
         """Run a possibly authenticated HTTP request.
 
         Mandatory parameters:
@@ -304,6 +305,7 @@ class Client:
         Optional parameters:
 
         - ``status``: expected HTTP status, *None* to skip status check
+        - ``content``: regular expression for response body, *None* to skip content check
         - ``login``: authenticated user, use **explicit** *None* to skip
         - ``auth``: authentication scheme to use instead of default behavior
         - ``**kwargs``: more request parameters (headers, data, json…)
@@ -323,10 +325,17 @@ class Client:
         self._auth.setAuth(login, kwargs, cookies, auth=auth)
         res = self._request(method, path, cookies, **kwargs)  # type: ignore
 
+        # check status
         if status is not None:
             if res.status_code != status:  # show error before aborting
                 log.error(f"bad {status} result: {res.status_code} {res.text[:512]}")
             assert res.status_code == status, f"unexpected status {res.status_code}, expecting {status}"
+
+        # check content
+        if content is not None:
+            if not re.search(content, res.text, re.DOTALL):
+                log.error(f"cannot find {content} in {res.text}")
+                assert False, f"expected content {content} not found in {res.text}"
 
         return res
 
@@ -350,32 +359,13 @@ class Client:
         """HTTP DELETE request."""
         return self.request("DELETE", path, **kwargs)
 
-    def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
-        """Run a query and check the response.
+    def check(self, method: str, path: str, status: int, **kwargs):
+        """Run a query and check the response status.
 
-        Mandatory parameters:
-
-        - ``method``: HTTP method ("GET", "POST", "PATCH", "DELETE"…)
-        - ``path``: local path under the base URL
-        - ``status``: expected HTTP status
-
-        Optional parameters:
-
-        - ``content``: regular expression in response body
-        - ``login``: authenticated user, use explicit *None* to skip
-        - ``**kwargs``: more request parameters (headers, data, json…)
+        Same as ``request``, but ``status`` is mandatory.
         """
 
-        # get HTTP response
-        res = self.request(method, path, status=status, **kwargs)
-
-        # check contents
-        if content is not None:
-            if not re.search(content, res.text, re.DOTALL):
-                log.error(f"cannot find {content} in {res.text}")
-                assert False, f"expected content {content} not found in {res.text}"
-
-        return res
+        return self.request(method, path, status=status, **kwargs)
 
 
 class RequestClient(Client):

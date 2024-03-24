@@ -207,6 +207,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 ### ? on ?
 
 Improved documentation.
+Simpler code and API documentation.
 
 ### 3.1 on 2024-03-24
 
