@@ -85,9 +85,11 @@ The above test runs with [`tests/app.py`](tests/app.py)
 [Flask](https://flask.palletsprojects.com/)
 REST application back-end with password and token authentication based on
 [FlaskSimpleAuth](https://pypi.org/project/FlaskSimpleAuth/).
-The code uses _27_ lines of Python for implementing password authentication,
-admin group authorization, and routes token generation (2), identity
-tests (2) and an open cookie-based translation route.
+The code uses _27_ lines of Python for implementing
+password (basic and parameters) and token authentications,
+admin group authorization, and routes for
+token generation (2), identity tests (2) and an incredible open cookie-based
+translation service.
 
 ## Fixtures
 
