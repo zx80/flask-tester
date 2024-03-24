@@ -3,7 +3,7 @@
 This package allows to run authenticated tests against a Flask application,
 either with internal Flask tests (aka `test_client`) or external tests (with
 `requests` which performs actual HTTP requests), including password and token
-authentication.
+authentication and per-user cookies.
 
 Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
@@ -66,7 +66,7 @@ def test_app_admin(app):
 This can be run against a (local) server:
 
 ```shell
-export TEST_SEED="some-random-data"              # shared seed
+export TEST_SEED="some-random-data"              # shared test seed
 flask --app app:app run &                        # start flask app
 pid=$!                                           # keep pid
 export FLASK_TESTER_URL="http://localhost:5000"  # set app local url
@@ -112,7 +112,7 @@ The package provides two fixtures:
   - `FLASK_TESTER_LOG_LEVEL` log level for module,
     default is `NOTSET`.
 
-  The fixture has 3 main methods:
+  The fixture has 4 main methods:
   - `setPass` to associate a password to a user, set to _None_ to remove credential.
   - `setToken` to associate a token to a user, set to _None_ to remove credential.
   - `setCookie` to add a cookie to a user, set value to _None_ to remove cookie.
@@ -198,6 +198,10 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
+
+### ? on ?
+
+Improved documentation.
 
 ### 3.1 on 2024-03-24
 
