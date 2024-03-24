@@ -121,7 +121,8 @@ The package provides two fixtures:
   - `setPass` to associate a password to a user, set to _None_ to remove credential.
   - `setToken` to associate a token to a user, set to _None_ to remove credential.
   - `setCookie` to add a cookie to a user, set value to _None_ to remove cookie.
-  - `setAuth` to add authentication data to a request `kwargs` and `cookies`.
+  - `setAuth` to add authentication data to a request `kwargs` and `cookies`.  
+    This method is called automatically for adding credentials to a request.
 
 - `ft_client` for app testing, which depends on the previous fixture, plus
   environment variables which allow to find the application, at least one must
@@ -140,7 +141,7 @@ The package provides two fixtures:
 
   The fixture then provides test methods to issue test requests against a Flask application:
   - `request` generic request with `login`, `auth`, `status` end `content` extensions.
-  - `get post put patch delete` methods with `login`, `auth` and `status` extensions.
+  - `get post put patch delete` methods with `login`, `auth` and `status` extensions.  
   Moreover, `setPass`, `setToken` and `setCookie` are forwarded to the internal authenticator.
 
 Authenticator environment variables can be set from the pytest Python test file by
@@ -204,7 +205,7 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-### ? on ?
+### 3.2 on 2024-03-24
 
 Improved documentation.
 Simpler code and API documentation.
