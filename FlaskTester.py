@@ -455,6 +455,35 @@ class FlaskClient(Client):
 
         return self._client.open(method=method, path=path, **kwargs)
 
+def _ft_authenticator():
+    """Fixture implementation separated for testing."""
+
+    level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
+    log.setLevel(logging.DEBUG if level == "DEBUG" else
+                 logging.INFO if level == "INFO" else
+                 logging.WARNING if level == "WARNING" else
+                 logging.ERROR if level == "ERROR" else
+                 logging.CRITICAL if level == "CRITICAL" else
+                 logging.NOTSET)
+
+    allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param none").split(" ")
+
+    # per-scheme parameters, must be consistent with FSA configuration
+    user = os.environ.get("FLASK_TESTER_USER", "USER")
+    pwd = os.environ.get("FLASK_TESTER_PASS", "PASS")
+    login = os.environ.get("FLASK_TESTER_LOGIN", "LOGIN")
+    bearer = os.environ.get("FLASK_TESTER_BEARER", "Bearer")
+    header = os.environ.get("FLASK_TESTER_HEADER", "Auth")
+    cookie = os.environ.get("FLASK_TESTER_COOKIE", "auth")
+    tparam = os.environ.get("FLASK_TESTER_TPARAM", "AUTH")
+
+    # create authenticator, possibly with initial credentials
+    auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer, header=header, cookie=cookie, tparam=tparam)
+
+    if "FLASK_TESTER_AUTH" in os.environ:
+        auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
+
+    return auth
 
 @pytest.fixture
 def ft_authenticator():
@@ -486,56 +515,18 @@ def ft_authenticator():
       Default is not set.
     """
 
-    level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
-    log.setLevel(logging.DEBUG if level == "DEBUG" else
-                 logging.INFO if level == "INFO" else
-                 logging.WARNING if level == "WARNING" else
-                 logging.ERROR if level == "ERROR" else
-                 logging.CRITICAL if level == "CRITICAL" else
-                 logging.NOTSET)
+    yield _ft_authenticator()
 
-    allow = os.environ.get("FLASK_TESTER_ALLOW", "bearer basic param").split(" ")
-
-    # per-scheme parameters, must be consistent with FSA configuration
-    user = os.environ.get("FLASK_TESTER_USER", "USER")
-    pwd = os.environ.get("FLASK_TESTER_PASS", "PASS")
-    login = os.environ.get("FLASK_TESTER_LOGIN", "LOGIN")
-    bearer = os.environ.get("FLASK_TESTER_BEARER", "Bearer")
-    header = os.environ.get("FLASK_TESTER_HEADER", "Auth")
-    cookie = os.environ.get("FLASK_TESTER_COOKIE", "auth")
-    tparam = os.environ.get("FLASK_TESTER_TPARAM", "AUTH")
-
-    # create authenticator, possibly with initial credentials
-    auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer, header=header, cookie=cookie, tparam=tparam)
-
-    if "FLASK_TESTER_AUTH" in os.environ:
-        auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
-
-    yield auth
-
-
-@pytest.fixture
-def ft_client(ft_authenticator):
-    """Pytest Fixture: ft_client.
-
-    Target environment variable, one **must** be defined:
-
-    - ``FLASK_TESTER_URL``: application HTTP base URL.
-    - ``FLASK_TESTER_APP``: Flask application, eg ``app:create_app``.
-
-    Other environment variable:
-
-    - ``FLASK_TESTER_DEFAULT``: Default client login, default is *None* for no
-      default.
-    """
+def _ft_client(authenticator):
+    """Fixture implementation separated for testing."""
 
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
 
-    if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
+    if "FLASK_TESTER_URL" in os.environ:
 
         app_url = os.environ["FLASK_TESTER_URL"]
-        client = RequestClient(ft_authenticator, app_url, default_login)
+        client = RequestClient(authenticator, app_url, default_login)
 
     elif "FLASK_TESTER_APP" in os.environ:
 
@@ -553,12 +544,29 @@ def ft_client(ft_authenticator):
                 if callable(app) and not hasattr(app, "test_client"):
                     app = app()
                 break
-        if not app:  # pragma: no cover
+        if not app:
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
-        client = FlaskClient(ft_authenticator, app.test_client(), default_login)
+        client = FlaskClient(authenticator, app.test_client(), default_login)
 
-    else:  # pragma: no cover
+    else:
 
         raise FlaskTesterError("no Flask application to test")
 
-    yield client
+    return client
+
+@pytest.fixture
+def ft_client(ft_authenticator):
+    """Pytest Fixture: ft_client.
+
+    Target environment variable, one **must** be defined:
+
+    - ``FLASK_TESTER_URL``: application HTTP base URL.
+    - ``FLASK_TESTER_APP``: Flask application, eg ``app:create_app``.
+
+    Other environment variable:
+
+    - ``FLASK_TESTER_DEFAULT``: Default client login, default is *None* for no
+      default.
+    """
+
+    yield _ft_client(ft_authenticator)

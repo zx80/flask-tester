@@ -9,7 +9,7 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
-![Tests](https://img.shields.io/badge/tests-11%20✓-success)
+![Tests](https://img.shields.io/badge/tests-12%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
@@ -198,6 +198,12 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
+
+### 3.1 on 2024-03-24
+
+More consistent test and demo code.
+Reach actual full coverage, without _any_ pragma.
+Fix default allowed authenticator schemes.
 
 ### 3.0 on 2024-03-23
 

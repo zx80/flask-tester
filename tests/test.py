@@ -292,3 +292,48 @@ def test_request_client():
         client.post("/", status=501, data={"hello": "world!"})
     finally:
         httpd.shutdown()
+
+def test_client_fixture():
+    # ft_client coverage
+    auth = ft._ft_authenticator()
+    # check and save env
+    # assert "FLASK_TESTER_URL" not in os.environ
+    url = None
+    if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
+        url = os.environ["FLASK_TESTER_URL"]
+        del os.environ["FLASK_TESTER_URL"]
+    app = None
+    if "FLASK_TESTER_APP" in os.environ:
+        app = os.environ["FLASK_TESTER_APP"]
+        del os.environ["FLASK_TESTER_APP"]
+    # no url nor app
+    try:
+        init = ft._ft_client(auth)
+        pytest.fail("must fail without environment variables")  # pragma: no cover
+    except ft.FlaskTesterError:
+        assert True, "expected error raised"
+    # url
+    os.environ["FLASK_TESTER_URL"] = "http://localhost:5000"
+    init = ft._ft_client(auth)
+    assert isinstance(init, ft.RequestClient)
+    del os.environ["FLASK_TESTER_URL"]
+    # bad package
+    os.environ["FLASK_TESTER_APP"] = "no_such_package"
+    try:
+        init = ft._ft_client(auth)
+        pytest.fail("must fail on missing package")  # pragma: no cover
+    except ModuleNotFoundError:
+        assert True, "expected error raised"
+    # bad name
+    os.environ["FLASK_TESTER_APP"] = "app:no_such_app"
+    try:
+        init = ft._ft_client(auth)
+        pytest.fail("must fail on missing package")  # pragma: no cover
+    except ft.FlaskTesterError:
+        assert True, "expected error raised"
+    del os.environ["FLASK_TESTER_APP"]
+    # reset env
+    if url:  # pragma: no cover
+        os.environ["FLASK_TESTER_URL"] = url
+    if app:
+        os.environ["FLASK_TESTER_APP"] = app
