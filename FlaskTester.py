@@ -359,13 +359,13 @@ class Client:
         """HTTP DELETE request."""
         return self.request("DELETE", path, **kwargs)
 
-    def check(self, method: str, path: str, status: int, **kwargs):
+    def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
         """Run a query and check the response status.
 
         Same as ``request``, but ``status`` is mandatory.
         """
 
-        return self.request(method, path, status=status, **kwargs)
+        return self.request(method, path, status=status, content=content, **kwargs)
 
 
 class RequestClient(Client):
