@@ -205,6 +205,10 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
+### 3.3 on 2024-03-25
+
+Fix missing parameter on `check` to ensure upward compatibility.
+
 ### 3.2 on 2024-03-24
 
 Improved documentation.
