@@ -131,9 +131,9 @@ The package provides two fixtures:
   - `FLASK_TESTER_URL` URL of the running application for external tests.
     The application is expected to be already running when the test is started.
 
-  - `FLASK_TESTER_APP` package (filename with `.py`) to be imported for the application.
+  - `FLASK_TESTER_APP` package (filename without `.py`) to be imported for the application.
     - for `pkg:name`, `name` is the application in `pkg`.
-    - for `pkg`, look for app as `app`, `application`, `create_app`, `make_app`.
+    - for `pkg` only, look for app as `app`, `application`, `create_app`, `make_app`.
     - in both cases, `name` is called if callable and not a Flask application.
 
   Moreover:
