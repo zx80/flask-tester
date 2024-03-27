@@ -19,16 +19,16 @@ def user_is_admin(login: str) -> bool:
     return login in ADMINS
 
 # login routes
-@app.get("/login", authorize="ALL", auth="basic")
+@app.get("/login", authorize="AUTH", auth="basic")
 def get_login(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 200
 
-@app.post("/login", authorize="ALL", auth="param")
+@app.post("/login", authorize="AUTH", auth="param")
 def post_login(user: fsa.CurrentUser):
     return {"user": user, "token": app.create_token(user)}, 201
 
 # identity routes
-@app.get("/who-am-i", authorize="ALL")
+@app.get("/who-am-i", authorize="AUTH")
 def get_who_am_i(user: fsa.CurrentUser, lang: fsa.Cookie = None):
     return {"user": user, "isadmin": user_is_admin(user), "lang": lang}, 200
 
@@ -39,7 +39,7 @@ def get_admin(user: fsa.CurrentUser):
 # incredible open service for top-notch translations
 HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi"}
 
-@app.get("/hello", authorize="ANY")
+@app.get("/hello", authorize="OPEN")
 def get_hello(lang: fsa.Cookie = "en"):
     return {"lang": lang, "hello": HELLO.get(lang, "Hi")}, 200
 

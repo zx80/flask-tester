@@ -203,6 +203,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 ### ? on ?
 
 Improved intro example.
+Use FSA 30 for testing.
 
 ### 3.3 on 2024-03-25
 
