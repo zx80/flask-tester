@@ -43,18 +43,21 @@ def app(ft_client):
     # return working client
     yield ft_client
 
-def test_app_admin(app):
-    # try all authentication schemes for calvin
-    app.get("/admin", login="calvin", auth="bearer", status=200)
-    app.get("/admin", login="calvin", auth="basic", status=200)
-    app.get("/admin", login="calvin", auth="param", status=200)
-    # try all authentication schemes for hobbes
-    res = app.get("/admin", login="hobbes", auth="bearer", status=403)
-    assert 'not in group "ADMIN"' in res.text
-    res = app.get("/admin", login="hobbes", auth="basic", status=403)
-    assert 'not in group "ADMIN"' in res.text
-    res = app.get("/admin", login="hobbes", auth="param", status=403)
-    assert 'not in group "ADMIN"' in res.text
+def test_app_admin(app):  # GET /admin
+    app.get("/admin", login=None, status=401)
+    for auth in ["bearer", "basic", "param"]:
+        res = app.get("/admin", login="calvin", auth=auth, status=200)
+        assert res.json["user"] == "calvin" and res.json["isadmin"]
+        res = app.get("/admin", login="hobbes", auth=auth, status=403)
+        assert 'not in group "ADMIN"' in res.text
+
+def test_app_who_am_i(app):  # GET /who-am-i
+    app.get("/who-am-i", login=None, status=401)
+    for auth in ["bearer", "basic", "param"]:
+        res = app.get("/who-am-i", login="calvin", auth=auth, status=200)
+        assert res.json["lang"] == "en" and res.json["isadmin"]
+        res = app.get("/who-am-i", login="hobbes", auth=auth, status=200)
+        assert res.json["lang"] == "fr" and not res.json["isadmin"]
 
 @pytest.fixture
 def api(ft_client):

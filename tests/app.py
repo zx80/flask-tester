@@ -7,7 +7,7 @@ import secret
 app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["token", "param", "basic"])
 
 # authentication with randomly-generated passwords
-PASSDB = {login: app.hash_password(pwd) for login, pwd in secret.PASSES.items()}
+PASSDB: dict[str, str] = {login: app.hash_password(pwd) for login, pwd in secret.PASSES.items()}
 
 app.get_user_pass(lambda login: PASSDB.get(login, None))  # set hook
 

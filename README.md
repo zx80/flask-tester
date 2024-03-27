@@ -9,7 +9,7 @@ Only one set of tests is needed, switching from internal to external is
 achieved through environment variables.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
-![Tests](https://img.shields.io/badge/tests-12%20✓-success)
+![Tests](https://img.shields.io/badge/tests-13%20✓-success)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-success)
 ![Issues](https://img.shields.io/github/issues/zx80/flask-tester?style=flat)
 ![Python](https://img.shields.io/badge/python-3-informational)
@@ -50,17 +50,12 @@ def app(ft_client):
     yield ft_client
 
 def test_app_admin(app):
-    # try all authentication schemes for calvin
-    app.get("/admin", login="calvin", auth="bearer", status=200)
-    app.get("/admin", login="calvin", auth="basic", status=200)
-    app.get("/admin", login="calvin", auth="param", status=200)
-    # try all authentication schemes for hobbes
-    res = app.get("/admin", login="hobbes", auth="bearer", status=403)
-    assert 'not in group "ADMIN"' in res.text
-    res = app.get("/admin", login="hobbes", auth="basic", status=403)
-    assert 'not in group "ADMIN"' in res.text
-    res = app.get("/admin", login="hobbes", auth="param", status=403)
-    assert 'not in group "ADMIN"' in res.text
+    app.get("/admin", login=None, status=401)
+    for auth in ["bearer", "basic", "param"]:
+        res = app.get("/admin", login="calvin", auth=auth, status=200)
+        assert res.json["user"] == "calvin" and res.json["isadmin"]
+        res = app.get("/admin", login="hobbes", auth=auth, status=403)
+        assert 'not in group "ADMIN"' in res.text
 ```
 
 This can be run against a (local) server:
@@ -204,6 +199,10 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
+
+### ? on ?
+
+Improved intro example.
 
 ### 3.3 on 2024-03-25
 
