@@ -339,25 +339,29 @@ class Client:
 
         return res
 
-    def get(self, path, status: int|None = None, content: str|None = None, **kwargs):
+    def get(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP GET request."""
         return self.request("GET", path, status=status, content=content, **kwargs)
 
-    def post(self, path, status: int|None = None, content: str|None = None, **kwargs):
+    def post(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP POST request."""
         return self.request("POST", path, status=status, content=content, **kwargs)
 
-    def put(self, path, status: int|None = None, content: str|None = None, **kwargs):
+    def put(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP PUT request."""
         return self.request("PUT", path, status=status, content=content, **kwargs)
 
-    def patch(self, path, status: int|None = None, content: str|None = None, **kwargs):
+    def patch(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP PATCH request."""
         return self.request("PATCH", path, status=status, content=content, **kwargs)
 
-    def delete(self, path, status: int|None = None, content: str|None = None, **kwargs):
+    def delete(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP DELETE request."""
         return self.request("DELETE", path, status=status, content=content, **kwargs)
+
+    def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
+        """Deprecated, use ``request`` or method-specific methods."""
+        return self.request(method, path, status=status, content=content, **kwargs)
 
 
 class RequestClient(Client):

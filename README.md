@@ -197,11 +197,12 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-### 4.0 on ?
+### 3.4 on ?
 
 Improved intro example.
 Use FSA 30 for testing.
-Remove `check` method and add optional parameters to per-method methods.
+Mark `check` as deprecated.
+Make method-specific check methods handle positional status and content.
 
 ### 3.3 on 2024-03-25
 
