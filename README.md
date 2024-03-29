@@ -166,9 +166,6 @@ The implementation of these fixtures is based on five classes plus exceptions:
     otherwise allowed schemes are tried, with tokens first.
   - `status` for the expected HTTP status code.
 
-  For the check methods, the mandatory parameters are the method, the path
-  and the expected status.
-
 - `FlaskClient` implementation class for internal tests.
 
    This class is mostly the standard `test_client` with the above parameters
@@ -200,10 +197,11 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-### ? on ?
+### 4.0 on ?
 
 Improved intro example.
 Use FSA 30 for testing.
+Remove `check` method and add optional parameters to per-method methods.
 
 ### 3.3 on 2024-03-25
 

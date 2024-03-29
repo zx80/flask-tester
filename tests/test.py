@@ -104,18 +104,18 @@ def api(ft_client):
 def test_admin(api):
     # check authentication schemes
     for auth in (None, "basic", "param", "bearer"):
-        api.check("GET", "/admin", status=200, login="calvin", auth=auth)
-        api.check("GET", "/admin", 200, login="susie", auth=auth)
-        api.check("GET", "/admin", 403, login="hobbes", auth=auth)
-        api.check("GET", "/admin", 401, login="moe", auth=auth)
-        api.check("GET", "/admin", 401, login=None, auth=auth)
+        api.get("/admin", status=200, login="calvin", auth=auth)
+        api.get("/admin", 200, login="susie", auth=auth)
+        api.get("/admin", 403, login="hobbes", auth=auth)
+        api.get("/admin", 401, login="moe", auth=auth)
+        api.get("/admin", 401, login=None, auth=auth)
         try:
-            api.check("GET", "/admin", status=599, login="calvin", auth=auth)
+            api.get("/admin", status=599, login="calvin", auth=auth)
             pytest.fail("assert on status must fail")  # pragma: no cover
         except AssertionError as e:
             assert "200" in str(e)
         try:
-            api.check("GET", "/admin", status=200, login="calvin", auth=auth, content="NOT THERE")
+            api.get("/admin", status=200, login="calvin", auth=auth, content="NOT THERE")
             pytest.fail("assert on content must fail")  # pragma: no cover
         except AssertionError as e:
             assert "NOT THERE" in str(e)
@@ -287,12 +287,12 @@ def test_request_client():
     thread.start()
     try:
         client = ft.RequestClient(ft.Authenticator(), "http://localhost:8888")
-        client.get("/", status=200)
+        client.get("/", 200)
         hello = io.BytesIO(b"hello world")
-        client.post("/", status=501, data={"hello": hello})
+        client.post("/", 501, data={"hello": hello})
         hello = io.BytesIO(b"hello world")
-        client.post("/", status=501, data={"hello": (hello, "hello.txt", "text/plain")})
-        client.post("/", status=501, data={"hello": "world!"})
+        client.post("/", 501, data={"hello": (hello, "hello.txt", "text/plain")})
+        client.post("/", 501, data={"hello": "world!"})
     finally:
         httpd.shutdown()
 

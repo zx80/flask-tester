@@ -339,33 +339,25 @@ class Client:
 
         return res
 
-    def get(self, path, **kwargs):
+    def get(self, path, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP GET request."""
-        return self.request("GET", path, **kwargs)
+        return self.request("GET", path, status=status, content=content, **kwargs)
 
-    def post(self, path, **kwargs):
+    def post(self, path, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP POST request."""
-        return self.request("POST", path, **kwargs)
+        return self.request("POST", path, status=status, content=content, **kwargs)
 
-    def put(self, path, **kwargs):
+    def put(self, path, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP PUT request."""
-        return self.request("PUT", path, **kwargs)
+        return self.request("PUT", path, status=status, content=content, **kwargs)
 
-    def patch(self, path, **kwargs):
+    def patch(self, path, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP PATCH request."""
-        return self.request("PATCH", path, **kwargs)
+        return self.request("PATCH", path, status=status, content=content, **kwargs)
 
-    def delete(self, path, **kwargs):
+    def delete(self, path, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP DELETE request."""
-        return self.request("DELETE", path, **kwargs)
-
-    def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
-        """Run a query and check the response status.
-
-        Same as ``request``, but ``status`` is mandatory.
-        """
-
-        return self.request(method, path, status=status, content=content, **kwargs)
+        return self.request("DELETE", path, status=status, content=content, **kwargs)
 
 
 class RequestClient(Client):
