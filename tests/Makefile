@@ -21,19 +21,29 @@ SEED    := $(shell head -c 33 /dev/urandom | base64)
 check.external:
 	source $(VENV)/bin/activate
 	export TEST_SEED="$(SEED)"
-	flask --app app:app run --port=$(PORT) &
+	export FLASK_TESTER_URL="http://localhost:$(PORT)"
+	# app
+	flask --app app run --port=$(PORT) &
 	flask_pid=$$!
 	sleep $(SLEEP)
-	export FLASK_TESTER_URL="http://localhost:$(PORT)"
 	$(PYTEST) $(PYTOPT) test_app.py
+	kill $$flask_pid
+	# app2
+	flask --app app2 run --port=$(PORT) &
+	flask_pid=$$!
+	sleep $(SLEEP)
+	$(PYTEST) $(PYTOPT) test_app2.py
 	kill $$flask_pid
 
 .PHONY: check.internal
 check.internal:
 	source $(VENV)/bin/activate
-	$(PYTEST) $(PYTOPT) test_app2.py
+	# app
 	export FLASK_TESTER_APP="app"
 	$(PYTEST) $(PYTOPT) test_app.py
+	# app2
+	export FLASK_TESTER_APP="app2:create_app"
+	$(PYTEST) $(PYTOPT) test_app2.py
 
 .PHONY: check.coverage
 check.coverage:

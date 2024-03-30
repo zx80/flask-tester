@@ -2,11 +2,7 @@ import os
 import pytest
 from FlaskTester import ft_client, ft_authenticator
 
-# hardwired local test
-os.environ.update(
-    FLASK_TESTER_ALLOW="basic param none",
-    FLASK_TESTER_APP="app2:create_app",
-)
+os.environ.update(FLASK_TESTER_ALLOW="basic param none")
 
 @pytest.fixture
 def app(ft_client):
