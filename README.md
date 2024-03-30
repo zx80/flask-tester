@@ -86,6 +86,8 @@ admin group authorization, and routes for
 token generation (2), identity tests (2) and an incredible open cookie-based
 translation service.
 
+See the [documentation](https://zx80.github.io/flask-tester/).
+
 ## License
 
 This code is [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
@@ -98,5 +100,4 @@ postcard to the author.
 
 Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 [sources](https://github.com/zx80/flask-tester) are available on GitHub,
-see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
