@@ -26,6 +26,8 @@ The package provides two fixtures:
     default is `Auth`.
   - `FLASK_TESTER_COOKIE` cookie name for for `cookie` token authentication,
     default is `auth`.
+  - `FLASK_TESTER_PTYPE` default type of parameters, `data` or `json`,
+    default is `data`.
   - `FLASK_TESTER_LOG_LEVEL` log level for module,
     default is `NOTSET`.
 

@@ -1,6 +1,7 @@
 """FlaskTester - Pytest fixtures for Flask authenticated internal and external tests.
 
-Pytest: PYTEST_DONT_REWRITE
+This is needed when testing this module, but may not be desirable when it is
+used depending on the ``assert``: PYTEST_DONT_REWRITE
 """
 
 import os
@@ -25,37 +26,41 @@ class AuthError(FlaskTesterError):
 
 
 class Authenticator:
-    """Manage authentication for test requests.
+    """Manage HTTP request authentication.
 
     Supported schemes:
 
-    - ``basic``: HTTP Basic Authentication
-    - ``param``: password with HTTP or JSON parameters
-    - ``bearer``: token in ``Authorization`` *bearer* header
-    - ``header``: token in a header
-    - ``cookie``: token in a cookie
-    - ``tparam``: token in a parameter
-    - ``fake``: fake scheme, login directly passed as a parameter
-    - ``none``: no authentication, only cookies
+    - ``basic``: HTTP Basic Authentication.
+    - ``param``: password with HTTP or JSON parameters.
+    - ``bearer``: token in ``Authorization`` *bearer* header.
+    - ``header``: token in a header.
+    - ``cookie``: token in a cookie.
+    - ``tparam``: token in a parameter.
+    - ``fake``: fake scheme, login directly passed as a parameter.
+    - ``none``: no authentication, only cookies.
 
     Constructor parameters:
 
     - ``allow``: list of allowed schemes.
-      default is ``["bearer", "basic", "param", "none"]``
+      default is ``["bearer", "basic", "param", "none"]``.
     - ``user``: parameter for user on ``param`` password authentication,
-      default is ``USER``
+      default is ``USER``.
     - ``pwd``: parameter for password on ``param`` password authentication,
-      default is ``PASS``
+      default is ``PASS``.
     - ``login``: parameter for user on ``fake`` authentication,
-      default is ``LOGIN``
+      default is ``LOGIN``.
     - ``bearer``: name of bearer scheme for token,
-      default is ``Bearer``
+      default is ``Bearer``.
     - ``header``: name of header for token,
-      default is ``Auth``
+      default is ``Auth``.
     - ``cookie``: name of cookie for token,
-      default is ``auth``
+      default is ``auth``.
     - ``tparam``: name of parameter for token,
-      default is ``AUTH``
+      default is ``AUTH``.
+    - ``ptype``: default parameter type, either ``data`` or ``json``.
+      default is ``data``.
+
+    Note: default values are consistent with `FlaskSimpleAuth <https://pypi.org/project/FlaskSimpleAuth/>`_.
     """
 
     _TOKEN_SCHEMES = {"bearer", "header", "cookie", "tparam"}
@@ -78,6 +83,7 @@ class Authenticator:
              header: str = "Auth",
              cookie: str = "auth",
              tparam: str = "AUTH",
+             ptype: str = "data",
          ):
 
         self._has_pass, self._has_token = False, False
@@ -97,6 +103,8 @@ class Authenticator:
         self._header = header
         self._cookie = cookie
         self._tparam = tparam
+        assert ptype in ("json", "data")
+        self._ptype = ptype
 
         # password and token credentials, cookies
         self._passes: dict[str, str] = {}
@@ -122,7 +130,7 @@ class Authenticator:
         self._set(login, pw, self._passes)
 
     def setPasses(self, pws: list[str]):
-        """Associate a list of login:password."""
+        """Associate a list of *login:password*."""
         for lp in pws:
             login, pw = lp.split(":", 1)
             self.setPass(login, pw)
@@ -143,7 +151,7 @@ class Authenticator:
         self._set(name, val, self._cookies[login])
 
     def _param(self, kwargs: dict[str, Any], key: str, val: Any):
-        """Add request parameter to "json" or "data"."""
+        """Add request parameter to ``json`` or ``data``."""
 
         if "json" in kwargs:
             assert isinstance(kwargs["json"], dict)
@@ -152,7 +160,7 @@ class Authenticator:
             assert isinstance(kwargs["data"], dict)
             kwargs["data"][key] = val
         else:
-            kwargs["data"] = {key: val}
+            kwargs[self._ptype] = {key: val}
 
     def _try_auth(self, auth: str|None, scheme: str) -> bool:
         """Whether to try this authentication scheme."""
@@ -161,10 +169,10 @@ class Authenticator:
     def setAuth(self, login: str|None, kwargs: dict[str, Any], cookies: dict[str, str], auth: str|None = None):
         """Set request authentication.
 
-        - login: login target, None means no authentication
-        - kwargs: request parameters
-        - cookies: request cookies
-        - auth: authentication method, default is None
+        - ``login``: login target, None means no authentication.
+        - ``kwargs``: request parameters.
+        - ``cookies``: request cookies.
+        - ``auth``: authentication method, default is None.
 
         The default behavior is to try allowed schemes: tokens first,
         then password, then fake.
@@ -234,13 +242,13 @@ class RequestFlaskResponse:
 
     Available attributes:
 
-    - ``status_code``: integer status code
-    - ``data``: body as bytes
-    - ``text``: body as a string
-    - ``headers``: dict of headers and their values
-    - ``cookies``: dict of cookies
-    - ``json``: JSON-converted body, or None
-    - ``is_json``: whether body was in JSON
+    - ``status_code``: integer status code.
+    - ``data``: body as bytes.
+    - ``text``: body as a string.
+    - ``headers``: dict of headers and their values.
+    - ``cookies``: dict of cookies.
+    - ``json``: JSON-converted body, or *None*.
+    - ``is_json``: whether body was in JSON.
 
     Constructor parameter:
 
@@ -268,8 +276,8 @@ class Client:
 
     Constructor parameters:
 
-    - ``auth`` authenticator
-    - ``default_login`` if ``login`` is not set.
+    - ``auth``: authenticator.
+    - ``default_login``: if ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
@@ -299,16 +307,16 @@ class Client:
 
         Mandatory parameters:
 
-        - ``method``: HTTP method ("GET", "POST", "PATCH", "DELETE"…)
-        - ``path``: local path under the base URL
+        - ``method``: HTTP method ("GET", "POST", "PATCH", "DELETE"…).
+        - ``path``: local path under the base URL.
 
         Optional parameters:
 
-        - ``status``: expected HTTP status, *None* to skip status check
-        - ``content``: regular expression for response body, *None* to skip content check
-        - ``login``: authenticated user, use **explicit** *None* to skip
-        - ``auth``: authentication scheme to use instead of default behavior
-        - ``**kwargs``: more request parameters (headers, data, json…)
+        - ``status``: expected HTTP status, *None* to skip status check.
+        - ``content``: regular expression for response body, *None* to skip content check.
+        - ``login``: authenticated user, use **explicit** *None* to skip.
+        - ``auth``: authentication scheme to use instead of default behavior.
+        - ``**kwargs``: more request parameters (headers, data, json…).
         """
 
         if "login" in kwargs:
@@ -329,7 +337,7 @@ class Client:
         if status is not None:
             if res.status_code != status:  # show error before aborting
                 log.error(f"bad {status} result: {res.status_code} {res.text[:512]}")
-            assert res.status_code == status, f"unexpected status {res.status_code}, expecting {status}"
+                assert res.status_code == status, f"unexpected status {res.status_code}, expecting {status}"
 
         # check content
         if content is not None:
@@ -340,27 +348,27 @@ class Client:
         return res
 
     def get(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP GET request."""
+        """HTTP GET request, see ``request`` parameters."""
         return self.request("GET", path, status=status, content=content, **kwargs)
 
     def post(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP POST request."""
+        """HTTP POST request, see ``request`` parameters."""
         return self.request("POST", path, status=status, content=content, **kwargs)
 
     def put(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP PUT request."""
+        """HTTP PUT request, see ``request`` parameters."""
         return self.request("PUT", path, status=status, content=content, **kwargs)
 
     def patch(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP PATCH request."""
+        """HTTP PATCH request, see ``request`` parameters."""
         return self.request("PATCH", path, status=status, content=content, **kwargs)
 
     def delete(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP DELETE request."""
+        """HTTP DELETE request, see ``request`` parameters."""
         return self.request("DELETE", path, status=status, content=content, **kwargs)
 
     def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
-        """Deprecated, use ``request`` or method-specific methods."""
+        """Deprecated, use ``request`` or HTTP-method-specific methods."""
         return self.request(method, path, status=status, content=content, **kwargs)
 
 
@@ -369,9 +377,9 @@ class RequestClient(Client):
 
     Constructor parameters:
 
-    - ``auth`` authenticator
-    - ``base_url`` target server
-    - ``default_login`` if ``login`` is not set.
+    - ``auth``: authenticator.
+    - ``base_url``: target server.
+    - ``default_login``: if ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
@@ -415,9 +423,9 @@ class FlaskClient(Client):
 
     Constructor parameters:
 
-    - ``auth`` authenticator
-    - ``client`` Flask actual ``test_client``
-    - ``default_login`` if ``login`` is not set.
+    - ``auth``: authenticator.
+    - ``client``: Flask actual ``test_client``.
+    - ``default_login``: if ``login`` is not set.
 
     Note: this client handles `cookies`.
     """
@@ -442,7 +450,7 @@ class FlaskClient(Client):
         return self._client.open(method=method, path=path, **kwargs)
 
 def _ft_authenticator():
-    """Fixture implementation separated for testing."""
+    """Fixture implementation, separated for testing purposes."""
 
     level = os.environ.get("FLASK_TESTER_LOG_LEVEL", "NOTSET")
     log.setLevel(logging.DEBUG if level == "DEBUG" else
@@ -462,9 +470,11 @@ def _ft_authenticator():
     header = os.environ.get("FLASK_TESTER_HEADER", "Auth")
     cookie = os.environ.get("FLASK_TESTER_COOKIE", "auth")
     tparam = os.environ.get("FLASK_TESTER_TPARAM", "AUTH")
+    ptype = os.environ.get("FLASK_TESTER_PTYPE", "data")
 
     # create authenticator, possibly with initial credentials
-    auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer, header=header, cookie=cookie, tparam=tparam)
+    auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer,
+                         header=header, cookie=cookie, tparam=tparam, ptype=ptype)
 
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
@@ -497,6 +507,8 @@ def ft_authenticator():
       Default is ``auth``.
     - ``FLASK_TESTER_TPARAM``: parameter for *token* authentication.
       Default is ``AUTH``.
+    - ``FLASK_TESTER_PTYPE``: default parameter type, ``data`` or ``json``.
+      Default is ``data``.
     - ``FLASK_TESTER_AUTH``: initial comma-separated list of *login:password*.
       Default is not set.
     """

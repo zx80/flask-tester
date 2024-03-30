@@ -7,11 +7,13 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## 3.4 on ?
 
-Improved intro example.
-Use FSA 30 for testing.
+Add `ptype` to control the default parameter type.
 Mark `check` as deprecated.
 Make method-specific check methods handle positional status and content.
+Improved intro example.
 Split documentation in several pages.
+Improve API documentation.
+Use FSA 30 for testing.
 
 ## 3.3 on 2024-03-25
 
