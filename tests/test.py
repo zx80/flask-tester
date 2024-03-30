@@ -123,12 +123,17 @@ def test_admin(api):
 
 def test_errors(api):
     # these schemes are not allowed
-    for scheme in ("header", "cookie", "fake", "tparam", "unexpected"):
+    for scheme in ("header", "cookie", "fake", "tparam"):
         try:
             api.get("/login", login="calvin", auth=scheme)
             pytest.fail("must raise an exception")  # pragma: no cover
         except ft.AuthError as e:
-            assert True, "expected error"
+            assert "auth is not allowed" in str(e)
+    try:
+        api.get("/login", login="calvin", auth="foobla")
+        pytest.fail("must raise an exception")  # pragma: no cover
+    except ft.AuthError as e:
+        assert "unexpected auth" in str(e)
 
 def test_methods(api):
     res = api.get("/who-am-i", login="susie", status=200, cookies={"lang": "it"})
