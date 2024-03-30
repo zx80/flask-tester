@@ -26,3 +26,4 @@ def test_something(app):
     res = app.get("/no-auth", 200, login="calvin", auth="none")
     assert "Hello" in res.text
     app.get("/no-auth", 200, "Bonjour", login="hobbes", auth="none")
+    app.get("/no-auth", 200, "Guten Tag", login=None)

@@ -7,7 +7,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## ? on ?
 
-Improved documentation.
+Improved documentation and tests.
 
 ## 3.6 on 2024-03-30
 
