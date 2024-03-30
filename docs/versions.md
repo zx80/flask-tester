@@ -5,7 +5,7 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-## 3.4 on ?
+## 3.4 on 2024-03-30
 
 Add `ptype` to control the default parameter type.
 Mark `check` as deprecated.

@@ -57,7 +57,7 @@ class Authenticator:
       default is ``auth``.
     - ``tparam``: name of parameter for token,
       default is ``AUTH``.
-    - ``ptype``: default parameter type, either ``data`` or ``json``.
+    - ``ptype``: default parameter type, either ``data`` or ``json``,
       default is ``data``.
 
     Note: default values are consistent with `FlaskSimpleAuth <https://pypi.org/project/FlaskSimpleAuth/>`_.
@@ -558,7 +558,7 @@ def ft_client(ft_authenticator):
 
     Target environment variable, one **must** be defined:
 
-    - ``FLASK_TESTER_URL``: application HTTP base URL.
+    - ``FLASK_TESTER_URL``: application HTTP base URL, eg ``http://localhost:5000``.
     - ``FLASK_TESTER_APP``: Flask application, eg ``app:create_app``.
 
     Other environment variable:
