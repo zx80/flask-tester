@@ -25,18 +25,19 @@ check.external:
 	flask_pid=$$!
 	sleep $(SLEEP)
 	export FLASK_TESTER_URL="http://localhost:$(PORT)"
-	$(PYTEST) $(PYTOPT) test.py
+	$(PYTEST) $(PYTOPT) test_app.py
 	kill $$flask_pid
 
 .PHONY: check.internal
 check.internal:
 	source $(VENV)/bin/activate
-	export FLASK_TESTER_APP="app:create_app"
-	$(PYTEST) $(PYTOPT) test.py
+	$(PYTEST) $(PYTOPT) test_app2.py
+	export FLASK_TESTER_APP="app"
+	$(PYTEST) $(PYTOPT) test_app.py
 
 .PHONY: check.coverage
 check.coverage:
-	$(MAKE) PYTEST="coverage run -m $(PYTEST)" check.internal
+	$(MAKE) PYTEST="coverage run -a -m $(PYTEST)" check.internal
 	coverage html ../FlaskTester.py
 	coverage report --show-missing --precision=1 --fail-under=100.0
 

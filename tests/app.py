@@ -42,7 +42,3 @@ HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi", "ko": "안녕"}
 @app.get("/hello", authorize="OPEN")
 def get_hello(lang: fsa.Cookie = "en"):
     return {"lang": lang, "hello": HELLO.get(lang, "Hi")}, 200
-
-# only for coverage
-def create_app():
-    return app
