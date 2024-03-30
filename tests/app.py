@@ -37,7 +37,7 @@ def get_admin(user: fsa.CurrentUser):
     return {"user": user, "isadmin": True}, 200
 
 # incredible open service for top-notch translations
-HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi"}
+HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi", "ko": "안녕"}
 
 @app.get("/hello", authorize="OPEN")
 def get_hello(lang: fsa.Cookie = "en"):
