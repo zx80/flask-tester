@@ -1,7 +1,6 @@
 """FlaskTester - Pytest fixtures for Flask authenticated internal and external tests.
 
-This is needed when testing this module, but may not be desirable when it is
-used depending on the ``assert``: PYTEST_DONT_REWRITE
+PYTEST_DONT_REWRITE: local assertions are really that, not pytest assertions.
 """
 
 import os
@@ -23,6 +22,20 @@ class FlaskTesterError(BaseException):
 class AuthError(FlaskTesterError):
     """Authenticator Exception."""
     pass
+
+
+class AssertError(FlaskTesterError):
+    """User assertion Exception."""
+    pass
+
+
+def _raiseError(msg: str):
+    """Undocumented switch for FlaskTester own tests."""
+    log.error(msg)
+    if "FLASK_TESTER_TESTING" in os.environ:
+        raise AssertError(msg)
+    else:  # pragma: no cover  # cannot cover an expected pytest failure!
+        pytest.fail(msg)
 
 
 class Authenticator:
@@ -336,14 +349,12 @@ class Client:
         # check status
         if status is not None:
             if res.status_code != status:  # show error before aborting
-                log.error(f"bad {status} result: {res.status_code} {res.text[:512]}")
-                assert res.status_code == status, f"unexpected status {res.status_code}, expecting {status}"
+                _raiseError(f"bad {status} result: {res.status_code} {res.text[:512]}...")
 
         # check content
         if content is not None:
             if not re.search(content, res.text, re.DOTALL):
-                log.error(f"cannot find {content} in {res.text}")
-                assert False, f"expected content {content} not found in {res.text}"
+                _raiseError(f"cannot find {content} in {res.text[:512]}...")
 
         return res
 

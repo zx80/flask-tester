@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 # set authn for ft_authenticator
 os.environ.update(
+    FLASK_TESTER_TESTING="*",
     FLASK_TESTER_ALLOW="bearer basic param none",
     FLASK_TESTER_AUTH=",".join(f"{l}:{p}" for l, p in secret.PASSES.items()),
 )
@@ -112,12 +113,12 @@ def test_admin(api):
         try:
             api.get("/admin", status=599, login="calvin", auth=auth)
             pytest.fail("assert on status must fail")  # pragma: no cover
-        except AssertionError as e:
+        except ft.AssertError as e:
             assert "200" in str(e)
         try:
             api.get("/admin", status=200, login="calvin", auth=auth, content="NOT THERE")
             pytest.fail("assert on content must fail")  # pragma: no cover
-        except AssertionError as e:
+        except ft.AssertError as e:
             assert "NOT THERE" in str(e)
 
 def test_errors(api):
