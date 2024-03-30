@@ -100,6 +100,7 @@ The implementation of these fixtures is based on five classes plus exceptions:
 - The following exceptions are defined:
   - `FlaskTesterError` root class for exceptions.
   - `AuthError` authentication-related errors.
+  - `AssertError` only for internal tests.
 
 ## See Also, or Not
 
