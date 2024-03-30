@@ -24,8 +24,8 @@ class AuthError(FlaskTesterError):
     pass
 
 
-class AssertError(FlaskTesterError):
-    """User assertion Exception."""
+class _AssertError(FlaskTesterError):
+    """User assertion Exception, only for internal testing."""
     pass
 
 
@@ -33,7 +33,7 @@ def _raiseError(msg: str):
     """Undocumented switch for FlaskTester own tests."""
     log.error(msg)
     if "FLASK_TESTER_TESTING" in os.environ:
-        raise AssertError(msg)
+        raise _AssertError(msg)
     else:  # pragma: no cover  # cannot cover an expected pytest failure!
         pytest.fail(msg)
 

@@ -110,15 +110,17 @@ def test_admin(api):
         api.get("/admin", 403, login="hobbes", auth=auth)
         api.get("/admin", 401, login="moe", auth=auth)
         api.get("/admin", 401, login=None, auth=auth)
+        # test status error
         try:
             api.get("/admin", status=599, login="calvin", auth=auth)
             pytest.fail("assert on status must fail")  # pragma: no cover
-        except ft.AssertError as e:
+        except ft._AssertError as e:
             assert "200" in str(e)
+        # test content error
         try:
             api.get("/admin", status=200, login="calvin", auth=auth, content="NOT THERE")
             pytest.fail("assert on content must fail")  # pragma: no cover
-        except ft.AssertError as e:
+        except ft._AssertError as e:
             assert "NOT THERE" in str(e)
 
 def test_errors(api):
