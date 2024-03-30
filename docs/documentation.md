@@ -55,11 +55,47 @@ The package provides two fixtures:
 
   The fixture then provides test methods to issue test requests against a Flask application:
   - `request` generic request with `login`, `auth`, `status` end `content` extensions.
-  - `get post put patch delete` methods with `login`, `auth` and `status` extensions.  
+  - `get post put patch delete` methods with the same extensions.
   Moreover, `setPass`, `setToken` and `setCookie` are forwarded to the internal authenticator.
 
 Authenticator environment variables can be set from the pytest Python test file by
 assigning them through `os.environ`.
+
+The typical use case is to define a local fixture, set the authentication and
+other data, and then proceed with it:
+
+```python
+import os
+import pytest
+from FlaskTester import ft_client, ft_authenticator
+
+os.environ.update(
+    FLASK_TESTER_ALLOW="basic param none",
+)
+
+@pytest.fixture
+def app(ft_client):
+    ft_client.setPass("calvin", "clv-pw")
+    ft_client.setCookie("calvin", "lang", "en")
+    ft_client.setPass("hobbes", "hbs-pw")
+    ft_client.setCookie("hobbes", "lang", "fr")
+    yield ft_client
+
+def test_something(app):
+    # requires an authentication
+    app.get("/authenticated-path", 401, login=None)
+    res = app.get("/authenticated-path", 200, login="calvin")
+    assert "Hello" in res.text
+    app.get("/authenticated-path", 200, "Bonjour", login="hobbes")
+    # only allowed to calvin
+    app.get("/only-for-calvin", 401, login=None)
+    app.get("/only-for-calvin", 200, login="calvin")
+    app.get("/only-for-calvin", 403, login="hobbes")
+    # no authentication required, but depends on lang
+    res = app.get("/no-auth", 200, login="calvin", auth="none")
+    assert "Hello" in res.text
+    app.get("/no-auth", 200, "Bonjour", login="hobbes", auth="none")
+```
 
 ## Classes
 
