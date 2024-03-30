@@ -6,7 +6,7 @@ either with internal Flask tests (aka `test_client`) or external tests (with
 authentication and per-user cookies.
 
 Only one set of tests is needed, switching from internal to external is
-achieved through environment variables.
+achieved by setting an environment variable.
 
 ![Status](https://github.com/zx80/flask-tester/actions/workflows/package.yml/badge.svg?branch=main&style=flat)
 ![Tests](https://img.shields.io/badge/tests-14%20✓-success)
