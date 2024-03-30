@@ -64,7 +64,7 @@ This can be run against a (local) server:
 export TEST_SEED="some-random-data"              # shared test seed
 flask --app app:app run &                        # start flask app
 pid=$!                                           # keep pid
-export FLASK_TESTER_URL="http://localhost:5000"  # set app local url
+export FLASK_TESTER_APP="http://localhost:5000"  # set app local url
 pytest test.py                                   # run external tests
 kill $pid                                        # stop app with pid
 ```
@@ -72,7 +72,7 @@ kill $pid                                        # stop app with pid
 Or locally with the Flask internal test infrastructure:
 
 ```shell
-export FLASK_TESTER_APP="app:app"                # set app module
+export FLASK_TESTER_APP="app:app"                # set app package
 pytest test.py                                   # run internal tests
 ```
 

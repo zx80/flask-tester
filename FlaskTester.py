@@ -532,15 +532,14 @@ def _ft_client(authenticator):
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
 
-    if "FLASK_TESTER_URL" in os.environ:
+    app_def = os.environ.get("FLASK_TESTER_URL", "app")
+    app_def = os.environ.get("FLASK_TESTER_APP", app_def)
 
-        app_url = os.environ["FLASK_TESTER_URL"]
-        client = RequestClient(authenticator, app_url, default_login)
-
-    elif "FLASK_TESTER_APP" in os.environ:
-
+    if app_def.startswith("http://") or app_def.startswith("https://"):
+        client = RequestClient(authenticator, app_def, default_login)
+    else:
         # load app package
-        pkg_name, app = os.environ["FLASK_TESTER_APP"], None
+        pkg_name, app = app_def, None
         app_names = ["app", "application", "create_app", "make_app"]
         if ":" in pkg_name:  # override defaults
             pkg_name, app_name = pkg_name.split(":", 1)
@@ -557,20 +556,17 @@ def _ft_client(authenticator):
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
         client = FlaskClient(authenticator, app.test_client(), default_login)
 
-    else:
-
-        raise FlaskTesterError("no Flask application to test")
-
     return client
 
 @pytest.fixture
 def ft_client(ft_authenticator):
     """Pytest Fixture: ft_client.
 
-    Target environment variable, one **must** be defined:
+    Target environment variable:
 
-    - ``FLASK_TESTER_URL``: application HTTP base URL, eg ``http://localhost:5000``.
-    - ``FLASK_TESTER_APP``: Flask application, eg ``app:create_app``.
+    - ``FLASK_TESTER_APP``: find the Flask application, eg
+      ``app:create_app`` for an internal test, or
+      ``http://localhost:5000`` for an external test.
 
     Other environment variable:
 

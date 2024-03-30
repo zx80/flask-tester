@@ -38,17 +38,19 @@ The package provides two fixtures:
   - `setAuth` to add authentication data to a request `kwargs` and `cookies`.  
     This method is called automatically for adding credentials to a request.
 
-- `ft_client` for app testing, which depends on the previous fixture, plus
-  environment variables which allow to find the application, at least one must
-  be defined:
+- `ft_client` for app testing, which depends on the previous fixture, plus the
+  `FLASK_TESTER_APP` environment variables which allow to find the application,
+  which contains either:
 
-  - `FLASK_TESTER_URL` URL of the running application for external tests.
+  - The URL of the running application for external tests.
     The application is expected to be already running when the test is started.
 
-  - `FLASK_TESTER_APP` package (filename without `.py`) to be imported for the application.
+  - The package (filename without `.py`) to be imported for the application.
     - for `pkg:name`, `name` is the application in `pkg`.
     - for `pkg` only, look for app as `app`, `application`, `create_app`, `make_app`.
     - in both cases, `name` is called if callable and not a Flask application.
+
+  If not set, the default is `app`, which is to behave like Flask.
 
   Moreover:
   - `FLASK_TESTER_DEFAULT` default login for authentication, default is _None_.

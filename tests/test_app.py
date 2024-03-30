@@ -309,7 +309,6 @@ def test_client_fixture():
     # ft_client coverage
     auth = ft._ft_authenticator()
     # check and save env
-    # assert "FLASK_TESTER_URL" not in os.environ
     url = None
     if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
         url = os.environ["FLASK_TESTER_URL"]
@@ -318,12 +317,8 @@ def test_client_fixture():
     if "FLASK_TESTER_APP" in os.environ:
         app = os.environ["FLASK_TESTER_APP"]
         del os.environ["FLASK_TESTER_APP"]
-    # no url nor app
-    try:
-        init = ft._ft_client(auth)
-        pytest.fail("must fail without environment variables")  # pragma: no cover
-    except ft.FlaskTesterError:
-        assert True, "expected error raised"
+    # no url nor app, defaults to "app"
+    init = ft._ft_client(auth)
     # url
     os.environ["FLASK_TESTER_URL"] = "http://localhost:5000"
     init = ft._ft_client(auth)
