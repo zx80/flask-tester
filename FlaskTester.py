@@ -359,23 +359,23 @@ class Client:
         return res
 
     def get(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP GET request, see ``request`` parameters."""
+        """HTTP GET request, see `Client.request`."""
         return self.request("GET", path, status=status, content=content, **kwargs)
 
     def post(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP POST request, see ``request`` parameters."""
+        """HTTP POST request, see `Client.request`."""
         return self.request("POST", path, status=status, content=content, **kwargs)
 
     def put(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP PUT request, see ``request`` parameters."""
+        """HTTP PUT request, see `Client.request`."""
         return self.request("PUT", path, status=status, content=content, **kwargs)
 
     def patch(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP PATCH request, see ``request`` parameters."""
+        """HTTP PATCH request, see `Client.request`."""
         return self.request("PATCH", path, status=status, content=content, **kwargs)
 
     def delete(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
-        """HTTP DELETE request, see ``request`` parameters."""
+        """HTTP DELETE request, see `Client.request`."""
         return self.request("DELETE", path, status=status, content=content, **kwargs)
 
     def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
