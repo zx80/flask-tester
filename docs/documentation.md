@@ -59,12 +59,12 @@ The package provides two fixtures:
 
     - **URL** of the running application for external tests, eg _http://localhost:5000_.
       The application is expected to be already running when the test is started.
-  
+
     - **Package** (filename without `.py`) to be imported for the application.
       - for _pkg:name_, _name_ is the application in _pkg_.
       - for _pkg_ only, look for app as _app_, _application_, _create_app_, _make_app_.
       - in both cases, _name_ is called if callable and not a Flask application.
-  
+
     If not set, the defaults to _app_, which is to behave like Flask.
 
   - `FLASK_TESTER_DEFAULT` default login for authentication, defaults to _None_.
