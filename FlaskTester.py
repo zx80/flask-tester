@@ -29,12 +29,15 @@ class _AssertError(FlaskTesterError):
     pass
 
 
-def _raiseError(msg: str):
-    """Undocumented switch for FlaskTester own tests."""
+def _pytestFail(msg: str):
+    """Undocumented switch for FlaskTester own tests.
+
+    A pytest test cannot check an expected pytest failure without failing.
+    """
     log.error(msg)
     if "FLASK_TESTER_TESTING" in os.environ:
         raise _AssertError(msg)
-    else:  # pragma: no cover  # cannot cover an expected pytest failure!
+    else:  # pragma: no cover
         pytest.fail(msg)
 
 
@@ -182,9 +185,9 @@ class Authenticator:
     def setAuth(self, login: str|None, kwargs: dict[str, Any], cookies: dict[str, str], auth: str|None = None):
         """Set request authentication.
 
-        :param login: Login target, None means no authentication.
-        :param kwargs: Request parameters.
-        :param cookies: Request cookies.
+        :param login: Login target, *None* means no authentication.
+        :param kwargs: Request parameters to modify.
+        :param cookies: Request cookies to modify.
         :param auth: Authentication method, default is *None*.
 
         The default behavior is to try allowed schemes: token first,
@@ -253,7 +256,7 @@ class RequestFlaskResponse:
 
     This only works for simple responses.
 
-    Available attributes:
+    Available public attributes:
 
     - ``status_code``: integer status code.
     - ``data``: body as bytes.
@@ -349,12 +352,12 @@ class Client:
         # check status
         if status is not None:
             if res.status_code != status:  # show error before aborting
-                _raiseError(f"bad {status} result: {res.status_code} {res.text[:512]}...")
+                _pytestFail(f"bad {status} result: {res.status_code} {res.text[:512]}...")
 
         # check content
         if content is not None:
             if not re.search(content, res.text, re.DOTALL):
-                _raiseError(f"cannot find {content} in {res.text[:512]}...")
+                _pytestFail(f"cannot find {content} in {res.text[:512]}...")
 
         return res
 
