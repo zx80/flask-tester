@@ -10,55 +10,90 @@ The package provides two fixtures:
 - `ft_authenticator` for app authentication, which depends on environment variables:
 
   - `FLASK_TESTER_ALLOW` space-separated list of allowed authentication schemes,
-    default is _bearer basic param none_.
-  - `FLASK_TESTER_AUTH` comma-separated list of _login:password_ credentials.
+    defaults to _bearer basic param none_.
+  - `FLASK_TESTER_AUTH` comma-separated list of _login:password_ credentials,
+    defaults to empty.
   - `FLASK_TESTER_USER` user login parameter for `param` password authentication,
-    default is _USERs_.
+    defaults to _USER_.
   - `FLASK_TESTER_PASS` user password parameter for `param` password authentication,
-    default is _PASS_.
+    defaults to _PASS_.
   - `FLASK_TESTER_LOGIN` user login parameter for `fake` authentication,
-    default is _LOGIN_.
+    defaults to _LOGIN_.
   - `FLASK_TESTER_TPARAM` token parameter for `tparam` token authentication,
-    default is _AUTH_.
+    defaults to _AUTH_.
   - `FLASK_TESTER_BEARER` bearer scheme for `bearer` token authentication,
-    default is _Bearer_.
+    defaults to _Bearer_.
   - `FLASK_TESTER_HEADER` header name for for `header` token authentication,
-    default is _Auth_.
+    defaults to _Auth_.
   - `FLASK_TESTER_COOKIE` cookie name for for `cookie` token authentication,
-    default is _auth_.
+    defaults to _auth_.
   - `FLASK_TESTER_PTYPE` default type of parameters, `data` or `json`,
-    default is _data_.
+    defaults to _data_.
   - `FLASK_TESTER_LOG_LEVEL` log level for module,
-    default is _NOTSET_.
+    defaults to _NOTSET_.
 
-  The fixture has 4 main methods:
+  The fixture has 3 useful methods:
+
   - `setPass` to associate a password to a user, set to _None_ to remove credential.
+
+    ```python
+    auth.setPass("susie", "<susie-incredible-password>")
+    ```
+
   - `setToken` to associate a token to a user, set to _None_ to remove credential.
+
+    ```python
+    auth.setToken("moe", "<moe's-token-computed-or-obtained-from-somewhere>")
+    ```
+
   - `setCookie` to add a cookie to a user, set value to _None_ to remove cookie.
-  - `setAuth` to add authentication data to a request `kwargs` and `cookies`.  
-    This method is called automatically for adding credentials to a request.
+
+    ```python
+    auth.setCookie("rosalyn", "lang", "en_US")
+    ```
 
 - `ft_client` for app testing, which depends on the previous fixture and
   is configured from two environment variables:
 
-  - `FLASK_TESTER_APP` tells where to find the application, which may be:
+  - `FLASK_TESTER_APP` tells where to find the application, which may be the:
 
-    - a **URL** of the running application for external tests.
+    - **URL** of the running application for external tests, eg _http://localhost:5000_.
       The application is expected to be already running when the test is started.
   
-    - a **package** (filename without `.py`) to be imported for the application.
+    - **Package** (filename without `.py`) to be imported for the application.
       - for _pkg:name_, _name_ is the application in _pkg_.
       - for _pkg_ only, look for app as _app_, _application_, _create_app_, _make_app_.
       - in both cases, _name_ is called if callable and not a Flask application.
   
-    If not set, the default is _app_, which is to behave like Flask.
+    If not set, the defaults to _app_, which is to behave like Flask.
 
-  - `FLASK_TESTER_DEFAULT` default login for authentication, default is _None_.
+  - `FLASK_TESTER_DEFAULT` default login for authentication, defaults to _None_.
 
   The fixture then provides test methods to issue test requests against a Flask application:
 
   - `request` generic request with `login`, `auth`, `status` end `content` extensions.
+
+    For instance, the following sumits a `POST` on path `/users` with one JSON parameter,
+    as user _calvin_ using _basic_ authentication,
+    expecting status code _201_ and some integer value (content regex) in the response body:
+
+    ```python
+    res = app.request("POST", "/users", 201, r"\d+", json={"username": "hobbes"},
+                      login="calvin", auth="basic")
+    assert res.is_json and "uid" in res.json
+    uid = res.json["uid"]
+    ```
+
+    The authentication data, here a password, must have been provided to the authenticator.
+
   - `get post put patch delete` methods with the same extensions.
+
+    Submit a `GET` request to path `/stats` authenticated as _hobbes_,
+    expecting response status _200_:
+
+    ```python
+    app.get("/stats", 200, login="hobbes")
+    ```
 
   Moreover, `setPass`, `setToken` and `setCookie` are forwarded to the internal authenticator.
 
@@ -101,43 +136,23 @@ def test_app(app):
 
 ## Classes
 
-The implementation of these fixtures is based on five classes plus exceptions:
+The implementation of these fixtures is based on five classes, see the API
+documentation for further details:
 
 - `Authenticator` class to store test credentials.
-
-  Use `setPass` and `setToken` to add user credentials.
-
 - `RequestFlaskResponse` class to turn a `requests` response into
   a Flask-looking response, with the following attributes: `status_code`,
   `data`, `text`, `headers`, `cookies`, `is_json` and `json`.
-
 - `Client` abstract class to run test, with two implementations.
-
-  The class provides usual `get`, `post`… per-HTTP-method methods,
-  and a more generic `request` method.
-
-  These methods expect the following named parameters:
-
-  - `login` for user login to use for authentication.
-  - `auth` for the authentication scheme to use for this request,
-    otherwise allowed schemes are tried, with tokens first.
-  - `status` for the expected HTTP status code.
-
-- `FlaskClient` implementation class for internal tests.
-
-   This class is mostly the standard `test_client` with the above parameters
-   extensions.
-
+- `FlaskClient` implementation class for internal (`test_client`) tests.
 - `RequestClient` implementation class for external (real HTTP) tests.
 
-  The path is relative to the URL provided to the constructor.
+## Exceptions
 
-  File parameters in `data`, with the format expected by the Flask test client,
-  are turned into `files` parameters as expected by `requests`.
+The following exceptions are defined and may be raised:
 
-- The following exceptions are defined:
-  - `FlaskTesterError` root class for exceptions.
-  - `AuthError` authentication-related errors.
+- `FlaskTesterError` root class for exceptions.
+- `AuthError` authentication-related errors.
 
 ## See Also, or Not
 

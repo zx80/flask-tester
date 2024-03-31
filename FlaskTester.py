@@ -251,7 +251,7 @@ class Authenticator:
 class RequestFlaskResponse:
     """Wrapper to return a Flask-looking response from a request response.
 
-    This only work for simple responses.
+    This only works for simple responses.
 
     Available attributes:
 
@@ -265,7 +265,7 @@ class RequestFlaskResponse:
 
     Constructor parameter:
 
-    - ``response``: from request.
+    :param response: Response from request.
     """
 
     def __init__(self, response):
