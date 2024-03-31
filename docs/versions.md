@@ -5,6 +5,10 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
+## TODO
+
+- remove deprecated features on 4.0
+
 ## ? on ?
 
 Improved documentation and tests.

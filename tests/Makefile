@@ -29,7 +29,6 @@ check.external:
 	$(PYTEST) $(PYTOPT) test_app.py
 	kill $$flask_pid
 	# app2
-	export FLASK_TESTER_APP="http://localhost:$(PORT)"
 	flask --app app2 run --port=$(PORT) &
 	flask_pid=$$!
 	sleep $(SLEEP)

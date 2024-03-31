@@ -10,26 +10,26 @@ The package provides two fixtures:
 - `ft_authenticator` for app authentication, which depends on environment variables:
 
   - `FLASK_TESTER_ALLOW` space-separated list of allowed authentication schemes,
-    default is `["bearer", "basic", "param", "none"]`.
+    default is _bearer basic param none_.
   - `FLASK_TESTER_AUTH` comma-separated list of _login:password_ credentials.
   - `FLASK_TESTER_USER` user login parameter for `param` password authentication,
-    default is `USER`.
+    default is _USERs_.
   - `FLASK_TESTER_PASS` user password parameter for `param` password authentication,
-    default is `PASS`.
+    default is _PASS_.
   - `FLASK_TESTER_LOGIN` user login parameter for `fake` authentication,
-    default is `LOGIN`.
+    default is _LOGIN_.
   - `FLASK_TESTER_TPARAM` token parameter for `tparam` token authentication,
-    default is `AUTH`.
+    default is _AUTH_.
   - `FLASK_TESTER_BEARER` bearer scheme for `bearer` token authentication,
-    default is `Bearer`.
+    default is _Bearer_.
   - `FLASK_TESTER_HEADER` header name for for `header` token authentication,
-    default is `Auth`.
+    default is _Auth_.
   - `FLASK_TESTER_COOKIE` cookie name for for `cookie` token authentication,
-    default is `auth`.
+    default is _auth_.
   - `FLASK_TESTER_PTYPE` default type of parameters, `data` or `json`,
-    default is `data`.
+    default is _data_.
   - `FLASK_TESTER_LOG_LEVEL` log level for module,
-    default is `NOTSET`.
+    default is _NOTSET_.
 
   The fixture has 4 main methods:
   - `setPass` to associate a password to a user, set to _None_ to remove credential.
@@ -41,17 +41,17 @@ The package provides two fixtures:
 - `ft_client` for app testing, which depends on the previous fixture and
   is configured from two environment variables:
 
-  - `FLASK_TESTER_APP` tells where to find the application:
+  - `FLASK_TESTER_APP` tells where to find the application, which may be:
 
-    - The URL of the running application for external tests.
+    - a **URL** of the running application for external tests.
       The application is expected to be already running when the test is started.
   
-    - The package (filename without `.py`) to be imported for the application.
-      - for `pkg:name`, `name` is the application in `pkg`.
-      - for `pkg` only, look for app as `app`, `application`, `create_app`, `make_app`.
-      - in both cases, `name` is called if callable and not a Flask application.
+    - a **package** (filename without `.py`) to be imported for the application.
+      - for _pkg:name_, _name_ is the application in _pkg_.
+      - for _pkg_ only, look for app as _app_, _application_, _create_app_, _make_app_.
+      - in both cases, _name_ is called if callable and not a Flask application.
   
-    If not set, the default is `app`, which is to behave like Flask.
+    If not set, the default is _app_, which is to behave like Flask.
 
   - `FLASK_TESTER_DEFAULT` default login for authentication, default is _None_.
 
@@ -72,32 +72,31 @@ other data, and then proceed with it:
 import os
 import pytest
 from FlaskTester import ft_client, ft_authenticator
+import secret
 
 os.environ.update(FLASK_TESTER_ALLOW="basic param none")
 
 @pytest.fixture
 def app(ft_client):
-    ft_client.setPass("calvin", "clv-pw")
+    ft_client.setPass("calvin", secret.PASSES["calvin"])
     ft_client.setCookie("calvin", "lang", "en")
-    ft_client.setPass("hobbes", "hbs-pw")
+    ft_client.setPass("hobbes", secret.PASSES["hobbes"])
     ft_client.setCookie("hobbes", "lang", "fr")
     yield ft_client
 
-def test_something(app):
+def test_app(app):
     # requires an authentication
     app.get("/authenticated", 401, login=None)
-    res = app.get("/authenticated", 200, login="calvin")
-    assert "Hello" in res.text
+    app.get("/authenticated", 200, "Hello", login="calvin")
     app.get("/authenticated", 200, "Bonjour", login="hobbes")
     # only allowed to calvin
-    app.get("/only-calvin", 401, login=None)
-    app.get("/only-calvin", 200, login="calvin")
-    app.get("/only-calvin", 403, login="hobbes")
+    app.get("/only-admin", 401, login=None)
+    app.get("/only-admin", 200, "administrateur", login="calvin")
+    app.get("/only-admin", 403, "not in group", login="hobbes")
     # no authentication required, but depends on lang
-    res = app.get("/no-auth", 200, login="calvin", auth="none")
-    assert "Hello" in res.text
-    app.get("/no-auth", 200, "Bonjour", login="hobbes", auth="none")
-    app.get("/no-auth", 200, "Guten Tag", login=None)
+    app.get("/open", 200, "Hello", login="calvin", auth="none")
+    app.get("/open", 200, "Bonjour", login="hobbes", auth="none")
+    app.get("/open", 200, "Guten Tag", login=None)
 ```
 
 ## Classes

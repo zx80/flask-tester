@@ -54,24 +54,24 @@ class Authenticator:
 
     Constructor parameters:
 
-    - ``allow``: list of allowed schemes.
-      default is ``["bearer", "basic", "param", "none"]``.
-    - ``user``: parameter for user on ``param`` password authentication,
-      default is ``USER``.
-    - ``pwd``: parameter for password on ``param`` password authentication,
-      default is ``PASS``.
-    - ``login``: parameter for user on ``fake`` authentication,
-      default is ``LOGIN``.
-    - ``bearer``: name of bearer scheme for token,
-      default is ``Bearer``.
-    - ``header``: name of header for token,
-      default is ``Auth``.
-    - ``cookie``: name of cookie for token,
-      default is ``auth``.
-    - ``tparam``: name of parameter for token,
-      default is ``AUTH``.
-    - ``ptype``: default parameter type, either ``data`` or ``json``,
-      default is ``data``.
+    :param allow: List of allowed schemes.
+        defaults to ``["bearer", "basic", "param", "none"]``.
+    :param user: Parameter for user on ``param`` password authentication,
+        defaults to ``"USER"``.
+    :param pwd: Parameter for password on ``param`` password authentication,
+        defaults to ``"PASS"``.
+    :param login: Parameter for user on ``fake`` authentication,
+        defaults to ``"LOGIN"``.
+    :param bearer: Name of bearer scheme for token,
+        defaults to ``"Bearer"``.
+    :param header: Name of header for token,
+        defaults to ``"Auth"``.
+    :param cookie: Name of cookie for token,
+        defaults to ``"auth"``.
+    :param tparam: Name of parameter for token,
+        defaults to ``"AUTH"``.
+    :param ptype: Default parameter type, either *data* or *json*,
+        defaults to ``"data"``.
 
     Note: default values are consistent with `FlaskSimpleAuth <https://pypi.org/project/FlaskSimpleAuth/>`_.
     """
@@ -182,12 +182,12 @@ class Authenticator:
     def setAuth(self, login: str|None, kwargs: dict[str, Any], cookies: dict[str, str], auth: str|None = None):
         """Set request authentication.
 
-        - ``login``: login target, None means no authentication.
-        - ``kwargs``: request parameters.
-        - ``cookies``: request cookies.
-        - ``auth``: authentication method, default is None.
+        :param login: Login target, None means no authentication.
+        :param kwargs: Request parameters.
+        :param cookies: Request cookies.
+        :param auth: Authentication method, default is *None*.
 
-        The default behavior is to try allowed schemes: tokens first,
+        The default behavior is to try allowed schemes: token first,
         then password, then fake.
         """
 
@@ -289,8 +289,8 @@ class Client:
 
     Constructor parameters:
 
-    - ``auth``: authenticator.
-    - ``default_login``: if ``login`` is not set.
+    :param auth: Authenticator.
+    :param default_login: When ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
@@ -320,16 +320,16 @@ class Client:
 
         Mandatory parameters:
 
-        - ``method``: HTTP method ("GET", "POST", "PATCH", "DELETE"…).
-        - ``path``: local path under the base URL.
+        :param method: HTTP method ("GET", "POST", "PATCH", "DELETE"…).
+        :param path: Local path under the base URL.
 
         Optional parameters:
 
-        - ``status``: expected HTTP status, *None* to skip status check.
-        - ``content``: regular expression for response body, *None* to skip content check.
-        - ``login``: authenticated user, use **explicit** *None* to skip.
-        - ``auth``: authentication scheme to use instead of default behavior.
-        - ``**kwargs``: more request parameters (headers, data, json…).
+        :param status: Expected HTTP status, *None* to skip status check.
+        :param content: Regular expression for response body, *None* to skip content check.
+        :param login: Authenticated user, use **explicit** *None* to skip default.
+        :param auth: Authentication scheme to use instead of default behavior.
+        :param **kwargs: More request parameters (headers, data, json…).
         """
 
         if "login" in kwargs:
@@ -388,9 +388,9 @@ class RequestClient(Client):
 
     Constructor parameters:
 
-    - ``auth``: authenticator.
-    - ``base_url``: target server.
-    - ``default_login``: if ``login`` is not set.
+    :param auth: Authenticator.
+    :param base_url: Target server.
+    :param default_login: When ``login`` is not set.
     """
 
     def __init__(self, auth: Authenticator, base_url: str, default_login=None):
@@ -434,9 +434,9 @@ class FlaskClient(Client):
 
     Constructor parameters:
 
-    - ``auth``: authenticator.
-    - ``client``: Flask actual ``test_client``.
-    - ``default_login``: if ``login`` is not set.
+    :param auth: Authenticator.
+    :param client: Flask actual ``test_client``.
+    :param default_login: When ``login`` is not set.
 
     Note: this client handles `cookies`.
     """
@@ -499,29 +499,29 @@ def ft_authenticator():
     Environment variables:
 
     - ``FLASK_TESTER_LOG_LEVEL``: package log level in
-      ``DEBUG INFO WARNING ERROR CRITICAL NOSET``.
-      Default is ``NOTSET``.
+      ``DEBUG INFO WARNING ERROR CRITICAL NOSET``,
+      defaults to ``NOTSET``.
     - ``FLASK_TESTER_ALLOW``: allowed space-separated authentication schemes, in
-      ``basic param bearer header cookie tparam fake none``.
-      Default is ``bearer basic param none``.
-    - ``FLASK_TESTER_USER``: user login parameter for ``param`` authentication.
-      Default is ``USER``.
-    - ``FLASK_TESTER_PASS``: user password parameter for ``param`` authentication.
-      Default is ``PASS``.
-    - ``FLASK_TESTER_LOGIN``: user login parameter for ``fake`` authentication.
-      Default is ``LOGIN``.
-    - ``FLASK_TESTER_BEARER``: bearer name for *token* authentication.
-      Default is ``Bearer``.
-    - ``FLASK_TESTER_HEADER``: header name for *token* authentication.
-      Default is ``Auth``.
-    - ``FLASK_TESTER_COOKIE``: cookie name for *token* authentication.
-      Default is ``auth``.
-    - ``FLASK_TESTER_TPARAM``: parameter for *token* authentication.
-      Default is ``AUTH``.
-    - ``FLASK_TESTER_PTYPE``: default parameter type, ``data`` or ``json``.
-      Default is ``data``.
-    - ``FLASK_TESTER_AUTH``: initial comma-separated list of *login:password*.
-      Default is not set.
+      ``basic param bearer header cookie tparam fake none``,
+      defaults to ``bearer basic param none``.
+    - ``FLASK_TESTER_USER``: user login parameter for ``param`` authentication,
+      defaults to ``USER``.
+    - ``FLASK_TESTER_PASS``: user password parameter for ``param`` authentication,
+      defaults to ``PASS``.
+    - ``FLASK_TESTER_LOGIN``: user login parameter for ``fake`` authentication,
+      defaults to ``LOGIN``.
+    - ``FLASK_TESTER_BEARER``: bearer name for *token* authentication,
+      defaults to ``Bearer``.
+    - ``FLASK_TESTER_HEADER``: header name for *token* authentication,
+      defaults to ``Auth``.
+    - ``FLASK_TESTER_COOKIE``: cookie name for *token* authentication,
+      defaults to ``auth``.
+    - ``FLASK_TESTER_TPARAM``: parameter for *token* authentication,
+      defaults to ``AUTH``.
+    - ``FLASK_TESTER_PTYPE``: default parameter type, ``data`` or ``json``,
+      defaults to ``data``.
+    - ``FLASK_TESTER_AUTH``: initial comma-separated list of *login:password*,
+      defaults to not set.
     """
 
     yield _ft_authenticator()
@@ -562,7 +562,7 @@ def _ft_client(authenticator):
 def ft_client(ft_authenticator):
     """Pytest Fixture: ft_client.
 
-    Target environment variable:
+    Mandatory target environment variable:
 
     - ``FLASK_TESTER_APP``: find the Flask application, eg
       ``app:create_app`` for an internal test, or
