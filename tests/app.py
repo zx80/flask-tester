@@ -8,15 +8,11 @@ app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["token", "param", "basic"])
 
 # authentication with randomly-generated passwords
 PASSDB: dict[str, str] = {login: app.hash_password(pwd) for login, pwd in secret.PASSES.items()}
-
-app.get_user_pass(lambda login: PASSDB.get(login, None))  # set hook
+app.get_user_pass(PASSDB.get)
 
 # admin group authorization
 ADMINS: set[str] = {"calvin", "susie"}
-
-@app.group_check("ADMIN")
-def user_is_admin(login: str) -> bool:
-    return login in ADMINS
+app.group_check("ADMIN", ADMINS.__contains__)
 
 # login routes
 @app.get("/login", authorize="AUTH", auth="basic")
@@ -30,7 +26,7 @@ def post_login(user: fsa.CurrentUser):
 # identity routes
 @app.get("/who-am-i", authorize="AUTH")
 def get_who_am_i(user: fsa.CurrentUser, lang: fsa.Cookie = None):
-    return {"user": user, "isadmin": user_is_admin(user), "lang": lang}, 200
+    return {"user": user, "isadmin": user in ADMINS, "lang": lang}, 200
 
 @app.get("/admin", authorize="ADMIN")
 def get_admin(user: fsa.CurrentUser):
