@@ -21,7 +21,7 @@ SEED    := $(shell head -c 33 /dev/urandom | base64)
 check.external:
 	source $(VENV)/bin/activate
 	export TEST_SEED="$(SEED)"
-	export FLASK_TESTER_URL="http://localhost:$(PORT)"
+	export FLASK_TESTER_APP="http://localhost:$(PORT)"
 	# app
 	flask --app app run --port=$(PORT) &
 	flask_pid=$$!

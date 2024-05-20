@@ -22,7 +22,7 @@ os.environ.update(
 
 def test_sanity():
     # must provide url or package of Flask application to test
-    assert "FLASK_TESTER_URL" in os.environ or "FLASK_TESTER_APP" in os.environ
+    assert "FLASK_TESTER_APP" in os.environ
     # log.debug(f"TEST_SEED={os.environ.get('TEST_SEED')}")
 
 # example from README.md
@@ -309,10 +309,6 @@ def test_client_fixture():
     # ft_client coverage
     auth = ft._ft_authenticator()
     # check and save env
-    url = None
-    if "FLASK_TESTER_URL" in os.environ:  # pragma: no cover
-        url = os.environ["FLASK_TESTER_URL"]
-        del os.environ["FLASK_TESTER_URL"]
     app = None
     if "FLASK_TESTER_APP" in os.environ:
         app = os.environ["FLASK_TESTER_APP"]
@@ -320,10 +316,10 @@ def test_client_fixture():
     # no url nor app, defaults to "app"
     init = ft._ft_client(auth)
     # url
-    os.environ["FLASK_TESTER_URL"] = "http://localhost:5000"
+    os.environ["FLASK_TESTER_APP"] = "http://localhost:5000"
     init = ft._ft_client(auth)
     assert isinstance(init, ft.RequestClient)
-    del os.environ["FLASK_TESTER_URL"]
+    del os.environ["FLASK_TESTER_APP"]
     # bad package
     os.environ["FLASK_TESTER_APP"] = "no_such_package"
     try:
@@ -340,7 +336,5 @@ def test_client_fixture():
         assert True, "expected error raised"
     del os.environ["FLASK_TESTER_APP"]
     # reset env
-    if url:  # pragma: no cover
-        os.environ["FLASK_TESTER_URL"] = url
     if app:
         os.environ["FLASK_TESTER_APP"] = app

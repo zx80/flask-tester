@@ -535,28 +535,30 @@ def _ft_client(authenticator):
     default_login = os.environ.get("FLASK_TESTER_DEFAULT", None)
     client: Client
 
-    app_def = os.environ.get("FLASK_TESTER_URL", "app")
-    app_def = os.environ.get("FLASK_TESTER_APP", app_def)
+    test_app = os.environ.get("FLASK_TESTER_APP", "app")
 
-    if app_def.startswith("http://") or app_def.startswith("https://"):
-        client = RequestClient(authenticator, app_def, default_login)
+    if test_app.startswith("http://") or test_app.startswith("https://"):
+        client = RequestClient(authenticator, test_app, default_login)
     else:
         # load app package
-        pkg_name, app = app_def, None
-        app_names = ["app", "application", "create_app", "make_app"]
-        if ":" in pkg_name:  # override defaults
-            pkg_name, app_name = pkg_name.split(":", 1)
+        if ":" in test_app:  # override defaults
+            pkg_name, app_name = test_app.split(":", 1)
             app_names = [app_name]
+        else:
+            pkg_name = test_app
+            app_names = ["app", "application", "create_app", "make_app"]
         pkg = importlib.import_module(pkg_name)
         # find app in package
+        app = None
         for name in app_names:
             if hasattr(pkg, name):
                 app = getattr(pkg, name)
                 if callable(app) and not hasattr(app, "test_client"):
                     app = app()
                 break
+        # none found
         if not app:
-            raise FlaskTesterError(f"cannot find Flask app in {pkg_name}")
+            raise FlaskTesterError(f"cannot find Flask app in {pkg_name} ({test_app})")
         client = FlaskClient(authenticator, app.test_client(), default_login)
 
     return client
