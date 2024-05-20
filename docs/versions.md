@@ -5,7 +5,7 @@ Packages are distributed from [PyPI](https://pypi.org/project/FlaskTester/),
 see also the [documentation](https://zx80.github.io/flask-tester/),
 please report any [issues](https://github.com/zx80/flask-tester/issues).
 
-## 4.0 on ?
+## 4.0 on 2024-05-20
 
 Improved documentation and tests.
 Remove deprecated `FLASK_TESTER_URL`, simplifying code in passing.
