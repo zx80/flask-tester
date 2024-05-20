@@ -381,10 +381,6 @@ class Client:
         """HTTP DELETE request, see `Client.request`."""
         return self.request("DELETE", path, status=status, content=content, **kwargs)
 
-    def check(self, method: str, path: str, status: int, content: str|None = None, **kwargs):
-        """Deprecated, use ``request`` or HTTP-method-specific methods."""
-        return self.request(method, path, status=status, content=content, **kwargs)
-
 
 class RequestClient(Client):
     """Request-based test provider.

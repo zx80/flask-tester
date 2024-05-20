@@ -296,7 +296,7 @@ def test_request_client():
     try:
         client = ft.RequestClient(ft.Authenticator(), "http://localhost:8888")
         client.get("/", 200)
-        client.check("GET", "/", 200)
+        client.request("GET", "/", 200)
         hello = io.BytesIO(b"hello world")
         client.post("/", 501, data={"hello": hello})
         hello = io.BytesIO(b"hello world")

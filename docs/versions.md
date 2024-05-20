@@ -9,6 +9,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 Improved documentation and tests.
 Remove deprecated `FLASK_TESTER_URL`, simplifying code in passing.
+Remove deprecated `check` method.
 
 ## 3.6 on 2024-03-30
 
