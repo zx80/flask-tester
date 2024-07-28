@@ -86,6 +86,9 @@ The package provides two fixtures:
 
     The authentication data, here a password, must have been provided to the authenticator.
 
+    Direct parameters from `pydantic` and `dataclass` classes are supported and
+    converted to JSON.
+
   - `get post put patch delete` methods with the same extensions.
 
     Submit a `GET` request to path `/stats` authenticated as _hobbes_,

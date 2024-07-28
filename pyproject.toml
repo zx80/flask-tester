@@ -33,7 +33,14 @@ package = "https://pypi.org/project/FlaskTester/"
 
 [project.optional-dependencies]
 # various dev tools
-dev = ["mypy", "pyright", "ruff", "coverage", "pymarkdownlnt!=0.9.5", "build", "twine", "wheel", "types-flask", "types-requests", "FlaskSimpleAuth>=30.0", "passlib"]
+dev = [
+  # static checks…
+  "mypy", "pyright", "ruff", "coverage", "pymarkdownlnt!=0.9.5",
+  # packaging
+  "build", "twine", "wheel",
+  # tests
+  "types-flask", "types-requests", "FlaskSimpleAuth>=30.0", "passlib", "pydantic"
+]
 # documentation generation
 doc = ["sphinx", "sphinx_rtd_theme", "sphinx-autoapi", "sphinx-lint", "myst_parser"]
 

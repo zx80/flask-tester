@@ -9,7 +9,9 @@ import re
 from typing import Any
 import importlib
 import logging
-import pytest
+import pytest  # for explicit fail calls, see _pytestFail
+import json
+import dataclasses
 
 log = logging.getLogger("flask_tester")
 
@@ -346,17 +348,56 @@ class Client:
             cookies.update(kwargs["cookies"])
             del kwargs["cookies"]
 
+        # FIXME allow or forbid?
+        # if "json" in kwargs and "data" in kwargs:
+        #     log.warning("mix of json and data parameters in request")
+
+        # convert json parameters
+        if "json" in kwargs:
+            json_param = kwargs["json"]
+            assert isinstance(json_param, dict)
+            for name in list(json_param.keys()):
+                val = json_param[name]
+                if val is None:
+                    pass
+                elif isinstance(val, (bool, int, float, str, tuple, list, dict)):
+                    pass
+                elif "model_dump" in val.__dir__() and callable(val.model_dump):
+                    # probably pydantic
+                    json_param[name] = val.model_dump()
+                else: # pydantic or standard dataclasses?
+                    json_param[name] = dataclasses.asdict(val)
+
+        # convert data parameters
+        if "data" in kwargs:
+            data_param = kwargs["data"]
+            assert isinstance(data_param, dict)
+            for name in list(data_param.keys()):
+                val = data_param[name]
+                if val is None:
+                    data_param[name] = "null"
+                elif isinstance(val, (io.IOBase, tuple)):
+                    pass  # file parameters?
+                elif isinstance(val, (bool, int, float, str, list, dict)):
+                    data_param[name] = json.dumps(val)
+                elif "model_dump_json" in val.__dir__() and callable(val.model_dump_json):
+                    data_param[name] = val.model_dump_json()
+                else:
+                    data_param[name] = json.dumps(dataclasses.asdict(val))
+
         self._auth.setAuth(login, kwargs, cookies, auth=auth)
         res = self._request(method, path, cookies, **kwargs)  # type: ignore
 
         # check status
         if status is not None:
             if res.status_code != status:  # show error before aborting
+                # FIXME what if the useful part is at the end?
                 _pytestFail(f"bad {status} result: {res.status_code} {res.text[:512]}...")
 
         # check content
         if content is not None:
             if not re.search(content, res.text, re.DOTALL):
+                # FIXME what if the useful part is at the end?
                 _pytestFail(f"cannot find {content} in {res.text[:512]}...")
 
         return res

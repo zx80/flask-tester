@@ -8,6 +8,7 @@ import http.server as htsv
 import threading
 import io
 import logging
+import model
 
 logging.basicConfig(level=logging.INFO)
 # logging.basicConfig(level=logging.DEBUG)
@@ -338,3 +339,35 @@ def test_client_fixture():
     # reset env
     if app:
         os.environ["FLASK_TESTER_APP"] = app
+
+def test_classes(api):
+
+    def thing_eq(ta, tb):
+        tb = model.Thing1(**tb) if isinstance(tb, dict) else tb
+        return ta.tid == tb.tid and ta.name == tb.name and ta.owner == tb.owner
+
+    # Things
+    t0 = {"tid": 0, "name": "zero", "owner": "Rosalyn"}
+    t1 = model.Thing1(tid=1, name="one", owner="Susie")
+    t2 = model.Thing2(tid=2, name="two", owner="Calvin")
+    t3 = model.Thing3(tid=3, name="three", owner="Hobbes")
+
+    n = 0
+    # check all combinations
+    for path in ["/t0", "/t1", "/t2", "/t3"]:
+        for param in [t0, t1, t2, t3]:
+            for tclass in [model.Thing1, model.Thing2, model.Thing3]:
+                for method in ["GET", "POST"]:
+                    for mode in ["data", "json"]:
+                        n +=1
+                        parameter = {mode: {"t": param}}
+                        res = api.request(method, path, 200, **parameter)
+                        assert res.is_json
+                        json = res.json
+                        assert isinstance(json, dict)
+                        assert thing_eq(tclass(**json), param)
+    assert n == 192
+
+    # null translation
+    assert api.get("/t0", 200, json={"t": None}).json is None
+    assert api.get("/t0", 200, data={"t": None}).json is None

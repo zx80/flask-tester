@@ -7,7 +7,11 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## TODO
 
-Add support for dataclass/pydantic parameters auto-serialization.
+Check whether data and json should be exclusive.
+
+## ? on ?
+
+Add support for transparent dataclass and pydantic parameters.
 
 ## 4.0 on 2024-05-20
 
