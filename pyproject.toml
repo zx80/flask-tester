@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "FlaskTester"
-version = "4.1"
+version = "4.2"
 authors = [ { name = "Fabien Coelho", email = "flask.tester@coelho.net" } ]
 description = "Pytest fixtures for Flask internal and external authenticated tests"
 readme = "README.md"

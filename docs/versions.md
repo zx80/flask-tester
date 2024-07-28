@@ -9,6 +9,10 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 Check whether data and json should be exclusive.
 
+## 4.2 on 2024-07-28
+
+Fix bug about string parameters introduced in 4.1.
+
 ## 4.1 on 2024-07-28
 
 Add support for transparent dataclass and pydantic parameters.

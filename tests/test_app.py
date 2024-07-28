@@ -368,6 +368,18 @@ def test_classes(api):
                         assert thing_eq(tclass(**json), param)
     assert n == 192
 
-    # null translation
+    # simple types translation
     assert api.get("/t0", 200, json={"t": None}).json is None
     assert api.get("/t0", 200, data={"t": None}).json is None
+    assert api.get("/t0", 200, json={"t": True}).json == True
+    assert api.get("/t0", 200, json={"t": False}).json == False
+    # non working, bad JsonData conversion
+    api.get("/t0", 400, data={"t": True})
+    api.get("/t0", 400, data={"t": False})
+    assert api.get("/t0", 200, json={"t": 2345}).json == 2345
+    assert api.get("/t0", 200, data={"t": 5432}).json == 5432
+    assert api.get("/t0", 200, json={"t": 23.45}).json == 23.45
+    assert api.get("/t0", 200, data={"t": 54.32}).json == 54.32
+    assert api.get("/t0", 200, json={"t": "Susie"}).json == "Susie"
+    api.get("/t0", 400, data={"t": "Susie"})  # raw str is not JSON
+    assert api.get("/t0", 200, data={"t": "\"Susie\""}).json == "Susie"

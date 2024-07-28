@@ -378,7 +378,10 @@ class Client:
                     data_param[name] = "null"
                 elif isinstance(val, (io.IOBase, tuple)):
                     pass  # file parameters?
-                elif isinstance(val, (bool, int, float, str, list, dict)):
+                elif isinstance(val, (bool, int, float, str)):
+                    # FIXME bool seems KO
+                    pass
+                elif isinstance(val, (list, dict)):
                     data_param[name] = json.dumps(val)
                 elif "model_dump_json" in val.__dir__() and callable(val.model_dump_json):
                     data_param[name] = val.model_dump_json()
