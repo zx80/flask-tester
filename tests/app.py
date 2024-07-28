@@ -2,7 +2,6 @@
 
 import FlaskSimpleAuth as fsa
 import secret
-import model
 
 # create application with token, param and basic authentication
 app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["token", "param", "basic"])
@@ -40,7 +39,9 @@ HELLO = {"it": "Ciao", "fr": "Salut", "en": "Hi", "ko": "안녕"}
 def get_hello(lang: fsa.Cookie = "en"):
     return {"lang": lang, "hello": HELLO.get(lang, "Hi")}, 200
 
-# json, pydantic and dataclasses
+# json, pydantic and dataclasses tests
+import model
+
 # FIXME could we drop fsa.jsonify?
 @app.get("/t0", authorize="OPEN")
 def get_t0(t: fsa.JsonData):
