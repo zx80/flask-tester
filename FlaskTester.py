@@ -388,6 +388,7 @@ class Client:
                 else:
                     data_param[name] = json.dumps(dataclasses.asdict(val))
 
+        # now set authentication headers and do the query
         self._auth.setAuth(login, kwargs, cookies, auth=auth)
         res = self._request(method, path, cookies, **kwargs)  # type: ignore
 
@@ -530,6 +531,7 @@ def _ft_authenticator():
     auth = Authenticator(allow, user=user, pwd=pwd, login=login, bearer=bearer,
                          header=header, cookie=cookie, tparam=tparam, ptype=ptype)
 
+    # possibly load credentials from the environment
     if "FLASK_TESTER_AUTH" in os.environ:
         auth.setPasses(os.environ["FLASK_TESTER_AUTH"].split(","))
 
