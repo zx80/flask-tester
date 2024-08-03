@@ -13,34 +13,40 @@ F.pdf	= $(F.md:%.md=%.pdf)
 # PYTHON	= python3
 PYTHON	= python
 
-.PHONY: check check.mypy check.ruff check.pytest check.demo check.coverage check.docs
+.PHONY: check.mypy
 check.mypy: venv
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	mypy --implicit-optional --check-untyped-defs $(MODULE).py
 
+.PHONY: check.pyright
 check.pyright: venv
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	pyright $(MODULE).py
 
 # E127,W504
+.PHONY: check.ruff
 check.ruff: venv
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	ruff check --ignore=E227,E402,E501,E721,F401,F811 $(MODULE).py
 
+.PHONY: check.pytest
 check.pytest: venv
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	$(MAKE) -C tests check
 
+.PHONY: check.coverage
 check.coverage: venv
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	$(MAKE) -C tests check.coverage
 
 # MD013: line length
+.PHONY: check.docs
 check.docs:
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	pymarkdown -d MD013 scan *.md
 	sphinx-lint docs/
 
+.PHONY: check
 check: venv
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
 	type $(PYTHON)
