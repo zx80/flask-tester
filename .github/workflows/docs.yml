@@ -1,6 +1,8 @@
 name: FlaskTest documentation publication on GitHub
 
-on: push
+on:
+  push:
+    branches: [ "main" ]
 
 jobs:
   build:
