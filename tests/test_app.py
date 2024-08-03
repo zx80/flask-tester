@@ -65,15 +65,15 @@ def test_app_who_am_i(app):  # GET /who-am-i
 def api(ft_client):
     # set a default
     ft_client._default_login = "calvin"
-    # bad password / token
+    # bad password and token
     ft_client.setPass("moe", None)
     ft_client.setToken("moe", None)
     ft_client.setPass("moe", "bad password")
     ft_client.setToken("moe", "bad token")
-    # cookies
+    # set language cookies
     ft_client.setCookie("calvin", "lang", "en")
     ft_client.setCookie("hobbes", "lang", "fr")
-    # get valid tokens using password authn
+    # get valid tokens using password authn on /login
     res = ft_client.get("/login", login="calvin", auth="basic", status=200)
     assert res.json["user"] == "calvin"
     ft_client._auth.setToken("calvin", res.json["token"])
@@ -100,7 +100,7 @@ def api(ft_client):
     assert res.json["user"] == "calvin"
     res = ft_client.get("/who-am-i", status=200)
     assert res.json["user"] == "calvin"
-    # add a bad password
+    # ready for testing routes
     yield ft_client
 
 def test_admin(api):
