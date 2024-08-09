@@ -13,6 +13,8 @@ Publish documentation only when pushing on branch `main`.
 ## ? on ?
 
 Improve comments.
+Activate _Python 3.13_ and _Pypy 3.10_ in GitHub CI.
+Restrict CI to _main_ branch.
 
 ## 4.2 on 2024-07-28
 
