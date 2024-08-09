@@ -8,7 +8,6 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 ## TODO
 
 Check whether data and json should be exclusive.
-Publish documentation only when pushing on branch `main`.
 
 ## ? on ?
 
