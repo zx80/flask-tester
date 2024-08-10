@@ -9,7 +9,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 Check whether data and json should be exclusive.
 
-## 4.3 on ?
+## 4.3 on 2024-08-10
 
 Improve comments.
 Activate _Python 3.13_ and _Pypy 3.10_ in GitHub CI.
