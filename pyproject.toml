@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "FlaskTester"
-version = "4.2"
+version = "4.3"
 authors = [ { name = "Fabien Coelho", email = "flask.tester@coelho.net" } ]
 description = "Pytest fixtures for Flask internal and external authenticated tests"
 readme = "README.md"
@@ -12,7 +12,6 @@ license = { text = "CC0" }
 requires-python = ">=3.10"
 dependencies = [
   "requests",
-  "flask",
   "pytest"
 ]
 classifiers = [
@@ -39,7 +38,7 @@ dev = [
   # packaging
   "build", "twine", "wheel",
   # tests
-  "types-flask", "types-requests", "FlaskSimpleAuth>=30.0", "passlib", "pydantic"
+  "types-flask", "types-requests", "FlaskSimpleAuth>=30.0", "passlib", "bcrypt", "pydantic"
 ]
 # documentation generation
 doc = ["sphinx", "sphinx_rtd_theme", "sphinx-autoapi", "sphinx-lint", "myst_parser"]

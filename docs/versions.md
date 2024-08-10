@@ -9,11 +9,12 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 Check whether data and json should be exclusive.
 
-## ? on ?
+## 4.3 on ?
 
 Improve comments.
 Activate _Python 3.13_ and _Pypy 3.10_ in GitHub CI.
 Restrict CI to _main_ branch.
+Add explicit `bcrypt` dependency for tests.
 
 ## 4.2 on 2024-07-28
 
