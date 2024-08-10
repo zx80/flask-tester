@@ -26,3 +26,12 @@ def test_something(app):
     app.get("/open", 200, "Hello", login="calvin", auth="none")
     app.get("/open", 200, "Bonjour", login="hobbes", auth="none")
     app.get("/open", 200, "Guten Tag", login=None)
+
+def test_params(app):
+    res = app.get("/add", 200, data={"i": 39, "j": 3}, login=None)
+    assert res.is_json and res.json["sum"] == 42
+    res = app.get("/add", 200, json={"i": 35, "j": 7}, login=None)
+    assert res.is_json and res.json["sum"] == 42
+    # mixing data/json is okay for FlaskTester
+    res = app.get("/add", 200, data={"i": 30}, json={"j": 12}, login=None)
+    assert res.is_json and res.json["sum"] == 42

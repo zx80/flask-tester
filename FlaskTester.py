@@ -348,11 +348,13 @@ class Client:
             cookies.update(kwargs["cookies"])
             del kwargs["cookies"]
 
-        # FIXME allow or forbid?
-        # if "json" in kwargs and "data" in kwargs:
-        #     log.warning("mix of json and data parameters in request")
+        # this is forbidden by Flask client
+        if "json" in kwargs and "data" in kwargs:
+            # merge into data to possibly keep uploads
+            kwargs["data"].update(kwargs["json"])
+            del kwargs["json"]
 
-        # convert json parameters
+        # convert json parameters to json
         if "json" in kwargs:
             json_param = kwargs["json"]
             assert isinstance(json_param, dict)
@@ -368,7 +370,7 @@ class Client:
                 else: # pydantic or standard dataclasses?
                     json_param[name] = dataclasses.asdict(val)
 
-        # convert data parameters
+        # convert data parameters to simple strings
         if "data" in kwargs:
             data_param = kwargs["data"]
             assert isinstance(data_param, dict)

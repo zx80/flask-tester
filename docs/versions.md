@@ -15,6 +15,7 @@ Improve comments.
 Activate _Python 3.13_ and _Pypy 3.10_ in GitHub CI.
 Restrict CI to _main_ branch.
 Add explicit `bcrypt` dependency for tests.
+Allow mixing `json` and `data` parameters by merging into `data`.
 
 ## 4.2 on 2024-07-28
 

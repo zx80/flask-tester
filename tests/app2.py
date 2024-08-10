@@ -16,7 +16,7 @@ def create_app():
     app.get_user_pass(PASSDB.get)
     app.group_check("admin", ADMIN.__contains__)
 
-    # 3 routes
+    # 4 routes
     @app.get("/open", authorize="OPEN")
     def get_no_auth(lang: fsa.Cookie = "de"):
         return fsa.jsonify(HELLO.get(lang, "Hey"))
@@ -28,5 +28,9 @@ def create_app():
     @app.get("/only-admin", authorize="admin")
     def get_only_admin():
         return fsa.jsonify("Salut administrateur !")
+
+    @app.get("/add", authorize="OPEN")
+    def get_add(i: int, j: int):
+        return {"sum": i + j}
 
     return app
