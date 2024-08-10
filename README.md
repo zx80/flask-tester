@@ -58,13 +58,13 @@ def test_app_admin(app):
         assert 'not in group "ADMIN"' in res.text
 ```
 
-This can be run against a (local) server:
+This can be run against a local or remote server:
 
 ```shell
 export TEST_SEED="some-random-data"              # shared test seed
 flask --app app:app run &                        # start flask app
 pid=$!                                           # keep pid
-export FLASK_TESTER_APP="http://localhost:5000"  # set app local url
+export FLASK_TESTER_APP="http://localhost:5000"  # set app url, local or remote
 pytest test.py                                   # run external tests
 kill $pid                                        # stop app with pid
 ```
