@@ -7,6 +7,9 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## TODO
 
+- add hook on setPass?
+- setPass and fake auth?
+
 ## ? on ?
 
 Slightly improve documentation.
