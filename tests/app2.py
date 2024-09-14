@@ -5,7 +5,7 @@ import secret
 
 def create_app():
 
-    app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["basic", "param"])
+    app = fsa.Flask("app", FSA_MODE="dev", FSA_AUTH=["basic", "param", "none"])
 
     # app password, group and other data
     PASSDB = {login:app.hash_password(pw) for login, pw in secret.PASSES.items()}
