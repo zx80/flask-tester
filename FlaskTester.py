@@ -603,7 +603,7 @@ def _ft_client(authenticator):
         # none found
         if not app:
             raise FlaskTesterError(f"cannot find Flask app in {pkg_name} ({test_app})")
-        client = FlaskClient(authenticator, app.test_client(), default_login)
+        client = FlaskClient(authenticator, app.test_client(), default_login)  # type: ignore
 
     return client
 
