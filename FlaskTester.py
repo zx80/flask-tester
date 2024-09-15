@@ -146,6 +146,7 @@ class Authenticator:
             store[key] = val
 
     def setHook(self, hook: _AuthHook):
+        """Set on password hook."""
         self._auth_hook = hook
 
     def setPass(self, login: str, pw: str|None):
@@ -319,6 +320,7 @@ class Client:
         self._default_login = default_login
 
     def setHook(self, hook: AuthHook):
+        """Set on password hook."""
         self._auth.setHook(lambda u, p: hook(self, u, p))
 
     def setToken(self, login: str, token: str|None):
