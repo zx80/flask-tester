@@ -351,6 +351,7 @@ def test_client_fixture():
 def test_classes(api):
 
     def thing_eq(ta, tb):
+        ta = model.Thing1(**ta) if isinstance(ta, dict) else ta
         tb = model.Thing1(**tb) if isinstance(tb, dict) else tb
         return ta.tid == tb.tid and ta.name == tb.name and ta.owner == tb.owner
 
@@ -364,17 +365,15 @@ def test_classes(api):
     # check all combinations
     for path in ["/t0", "/t1", "/t2", "/t3"]:
         for param in [t0, t1, t2, t3]:
-            for tclass in [model.Thing1, model.Thing2, model.Thing3]:
+            for tclass in [dict, model.Thing1, model.Thing2, model.Thing3]:
                 for method in ["GET", "POST"]:
                     for mode in ["data", "json"]:
                         n +=1
                         parameter = {mode: {"t": param}}
                         res = api.request(method, path, 200, **parameter)
-                        assert res.is_json
-                        json = res.json
-                        assert isinstance(json, dict)
-                        assert thing_eq(tclass(**json), param)
-    assert n == 192
+                        assert res.is_json and isinstance(res.json, dict)
+                        assert thing_eq(tclass(**res.json), param)
+    assert n == 256
 
     # simple types translation
     assert api.get("/t0", 200, json={"t": None}).json is None

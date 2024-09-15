@@ -14,6 +14,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 Slightly improve documentation.
 Add `setHook`.
+Add some tests.
 
 ## 4.3 on 2024-08-10
 
