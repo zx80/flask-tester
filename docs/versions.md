@@ -7,12 +7,13 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## TODO
 
-- add hook on setPass?
 - setPass and fake auth?
+- fixture scope?
 
 ## ? on ?
 
 Slightly improve documentation.
+Add `setHook`.
 
 ## 4.3 on 2024-08-10
 

@@ -98,6 +98,19 @@ The package provides two fixtures:
     app.get("/stats", 200, login="hobbes")
     ```
 
+  - `setHook` allows to add a hook executed on `setPass`.
+    The typical use case is to load a token when new credentials are provided.
+    As with other methods, _None_ is used for removal.
+
+    ```python
+    def authHook(client: Client, username: str, password: str|None):
+        if password:
+            res = client.post("/login", 201, login=username, auth="param")
+            client.setToken(username, res.json["token"])
+        else:
+            client.setToken(username, None)
+    ```
+
   Moreover, `setPass`, `setToken` and `setCookie` are forwarded to the internal authenticator.
 
 Authenticator environment variables can be set from the pytest Python test file by

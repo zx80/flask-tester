@@ -12,7 +12,7 @@ import model
 
 logging.basicConfig(level=logging.INFO)
 # logging.basicConfig(level=logging.DEBUG)
-# log = logging.getLogger("test")
+log = logging.getLogger("test")
 
 # set authn for ft_authenticator
 os.environ.update(
@@ -27,23 +27,31 @@ def test_sanity():
     # log.debug(f"TEST_SEED={os.environ.get('TEST_SEED')}")
 
 # example from README.md
+def authHook(api, user: str, pwd: str|None):
+    if pwd is not None:  # get token
+        try:
+            res = api.get("/login", login=user, auth="basic", status=200)
+            api.setToken(user, res.json["token"])
+        except ft.FlaskTesterError as e:  # pragma: no cover
+            log.warning(f"error: {e}")
+    else:  # cleanup
+        api.setToken(user, None)
+
 @pytest.fixture
 def app(ft_client):
-    # add test passwords for Calvin and Hobbes (must be consistent with app!)
+    # hook when adding login/passwords
+    ft_client.setHook(authHook)
+    # Calvin authentication
     ft_client.setPass("calvin", secret.PASSES["calvin"])
-    ft_client.setPass("hobbes", secret.PASSES["hobbes"])
-    # get user tokens, assume json result {"token": "<token-value>"}
-    res = ft_client.get("/login", login="calvin", auth="basic", status=200)
-    assert res.is_json
-    ft_client.setToken("calvin", res.json["token"])
-    res = ft_client.post("/login", login="hobbes", auth="param", status=201)
-    assert res.is_json
-    ft_client.setToken("hobbes", res.json["token"])
-    # also set a cookie
     ft_client.setCookie("hobbes", "lang", "fr")
+    # Hobbes authentication
+    ft_client.setPass("hobbes", secret.PASSES["hobbes"])
     ft_client.setCookie("calvin", "lang", "en")
     # return working client
     yield ft_client
+    # cleanup
+    ft_client.setPass("calvin", None)
+    ft_client.setPass("hobbes", None)
 
 def test_app_admin(app):  # GET /admin
     app.get("/admin", login=None, status=401)

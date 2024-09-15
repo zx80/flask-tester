@@ -31,18 +31,20 @@ import pytest
 from FlaskTester import ft_authenticator, ft_client
 import secret
 
+def authHook(api, user: str, pwd: str|None):
+    if pwd is not None:  # get a token when a login/password is provided
+        res = api.get("/login", login=user, auth="basic", status=200)
+        api.setToken(user, res.json["token"])
+    else:  # remove token
+        api.setToken(user, None)
+
 @pytest.fixture
 def app(ft_client):
+    # register authentication hook
+    ft_client.setHook(authHook)
     # add test passwords for Calvin and Hobbes (must be consistent with app!)
     ft_client.setPass("calvin", secret.PASSES["calvin"])
     ft_client.setPass("hobbes", secret.PASSES["hobbes"])
-    # get user tokens, assume json result {"token": "<token-value>"}
-    res = ft_client.get("/login", login="calvin", auth="basic", status=200)
-    assert res.is_json
-    ft_client.setToken("calvin", res.json["token"])
-    res = ft_client.post("/login", login="hobbes", auth="param", status=201)
-    assert res.is_json
-    ft_client.setToken("hobbes", res.json["token"])
     # also set a cookie
     ft_client.setCookie("hobbes", "lang", "fr")
     ft_client.setCookie("calvin", "lang", "en")

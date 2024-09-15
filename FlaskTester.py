@@ -6,7 +6,7 @@ PYTEST_DONT_REWRITE: local assertions are really that, not pytest assertions.
 import os
 import io
 import re
-from typing import Any
+from typing import Any, Callable, Self
 import importlib
 import logging
 import pytest  # for explicit fail calls, see _pytestFail
@@ -89,6 +89,9 @@ class Authenticator:
     _AUTH_SCHEMES.update(_TOKEN_SCHEMES)
     _AUTH_SCHEMES.update(_PASS_SCHEMES)
 
+    # authenticator login/pass hook
+    _AuthHook = Callable[[str, str|None], None]
+
     def __init__(self,
              allow: list[str] = ["bearer", "basic", "param", "none"],
              # parameter names for "basic" and "param"
@@ -124,6 +127,9 @@ class Authenticator:
         assert ptype in ("json", "data")
         self._ptype = ptype
 
+        # _AuthHook|None, but python cannot stand it:-(
+        self._auth_hook: Any = None
+
         # password and token credentials, cookies
         self._passes: dict[str, str] = {}
         self._tokens: dict[str, str] = {}
@@ -138,6 +144,9 @@ class Authenticator:
             assert isinstance(val, str)
             store[key] = val
 
+    def setHook(self, hook: _AuthHook):
+        self._auth_hook = hook
+
     def setPass(self, login: str, pw: str|None):
         """Associate a password to a user.
 
@@ -146,6 +155,7 @@ class Authenticator:
         if not self._has_pass:
             raise AuthError("cannot set password, no password scheme allowed")
         self._set(login, pw, self._passes)
+        _ = self._auth_hook and self._auth_hook(login, pw)
 
     def setPasses(self, pws: list[str]):
         """Associate a list of *login:password*."""
@@ -298,10 +308,16 @@ class Client:
     :param default_login: When ``login`` is not set.
     """
 
+    # client login/pass hook (with mypy workaround)
+    AuthHook = Callable[[Self, str, str|None], None]  # type: ignore
+
     def __init__(self, auth: Authenticator, default_login: str|None = None):
         self._auth = auth
         self._cookies: dict[str, dict[str, str]] = {}  # login -> name -> value
         self._default_login = default_login
+
+    def setHook(self, hook: AuthHook):
+        self._auth.setHook(lambda u, p: hook(self, u, p))
 
     def setToken(self, login: str, token: str|None):
         """Associate a token to a login, *None* to remove."""
