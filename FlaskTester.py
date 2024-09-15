@@ -6,7 +6,8 @@ PYTEST_DONT_REWRITE: local assertions are really that, not pytest assertions.
 import os
 import io
 import re
-from typing import Any, Callable, Self
+# Python >= 3.11: Self
+from typing import Any, Callable
 import importlib
 import logging
 import pytest  # for explicit fail calls, see _pytestFail
@@ -309,7 +310,8 @@ class Client:
     """
 
     # client login/pass hook (with mypy workaround)
-    AuthHook = Callable[[Self, str, str|None], None]  # type: ignore
+    # Python >= 3.11: Self
+    AuthHook = Callable[[Any, str, str|None], None]  # type: ignore
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
         self._auth = auth
