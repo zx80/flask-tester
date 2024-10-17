@@ -9,6 +9,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 - setPass and fake auth?
 - fixture scope?
+- document file upload tests?
 
 ## ? on ?
 
