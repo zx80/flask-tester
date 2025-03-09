@@ -12,7 +12,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 - document file upload tests?
 - activate _Pypy 3.11_ and _Python 3.14_ in GitHub CI.
 
-## ? on ?
+## 5.0 on 2025-03-09
 
 Add `setHook`.
 Slightly improve documentation.
