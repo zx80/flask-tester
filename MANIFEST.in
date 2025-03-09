@@ -1,1 +1,1 @@
-exclude docs/* */Makefile
+exclude docs/* tests/* */Makefile
