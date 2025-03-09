@@ -36,7 +36,7 @@ dev = [
   # static checks…
   "mypy", "pyright", "ruff", "coverage", "pymarkdownlnt!=0.9.5",
   # tests
-  "types-flask", "types-requests", "FlaskSimpleAuth>=33.0", "bcrypt", "pydantic"
+  "types-flask", "types-requests", "FlaskSimpleAuth>=35.0", "bcrypt", "pydantic"
 ]
 # documentation generation
 doc = ["sphinx", "sphinx_rtd_theme", "sphinx-autoapi", "sphinx-lint", "myst_parser"]
