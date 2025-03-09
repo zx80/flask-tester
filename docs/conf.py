@@ -8,7 +8,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "FlaskTester"
-copyright = "2024, Calvin"
+copyright = "2024-2025 Calvin"
 author = "Calvin"
 
 from importlib.metadata import version as pkg_version
