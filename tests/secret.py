@@ -1,7 +1,7 @@
 # random passwords for testing
 
 import os
-import random
+import random  # a misnomer, should be called "pseudo-random"
 import string
 
 # both client and server must share the same seed!
