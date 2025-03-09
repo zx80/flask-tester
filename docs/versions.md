@@ -10,11 +10,11 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 - setPass and fake auth?
 - fixture scope?
 - document file upload tests?
+- activate _Pypy 3.11_ and _Python 3.14_ in GitHub CI.
 
 ## ? on ?
 
 Add `setHook`.
-Activate _Pypy 3.11_ and _Python 3.14_ in GitHub CI.
 Slightly improve documentation.
 Add some tests.
 
