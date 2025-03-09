@@ -17,19 +17,19 @@ def create_app():
     app.group_check("admin", ADMIN.__contains__)
 
     # 4 routes
-    @app.get("/open", authorize="OPEN")
+    @app.get("/open", authz="OPEN")
     def get_no_auth(lang: fsa.Cookie = "de"):
         return fsa.jsonify(HELLO.get(lang, "Hey"))
 
-    @app.get("/authenticated", authorize="AUTH")
+    @app.get("/authenticated", authz="AUTH")
     def get_authenticated(user: fsa.CurrentUser, lang: fsa.Cookie = "de"):
         return fsa.jsonify(HELLO.get(lang, "Hey") + " " + user)
 
-    @app.get("/only-admin", authorize="admin")
+    @app.get("/only-admin", authz="admin")
     def get_only_admin():
         return fsa.jsonify("Salut administrateur !")
 
-    @app.get("/add", authorize="OPEN")
+    @app.get("/add", authz="OPEN")
     def get_add(i: int, j: int):
         return {"sum": i + j}
 
