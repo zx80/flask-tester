@@ -4,7 +4,6 @@ SHELL	= /bin/bash
 .ONESHELL:
 
 MODULE	= FlaskTester
-VENV    = venv
 
 F.md	= $(wildcard *.md)
 F.pdf	= $(F.md:%.md=%.pdf)
@@ -15,40 +14,40 @@ PYTHON	= python
 
 .PHONY: check.mypy
 check.mypy: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	mypy --implicit-optional --check-untyped-defs $(MODULE).py
 
 .PHONY: check.pyright
 check.pyright: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	pyright $(MODULE).py
 
 # E127,W504
 .PHONY: check.ruff
 check.ruff: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	ruff check --ignore=E227,E402,E501,E721,F401,F811 $(MODULE).py
 
 .PHONY: check.pytest
 check.pytest: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	$(MAKE) -C tests check
 
 .PHONY: check.coverage
 check.coverage: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	$(MAKE) -C tests check.coverage
 
 # MD013: line length
 .PHONY: check.docs
 check.docs:
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	pymarkdown -d MD013 scan *.md
 	sphinx-lint docs/
 
 .PHONY: check
 check: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	type $(PYTHON)
 	$(MAKE) check.mypy
 	$(MAKE) check.pyright
@@ -59,7 +58,7 @@ check: venv
 
 .PHONY: docs
 docs: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	$(MAKE) -C docs html
 	find docs/_build -type d -print0 | xargs -0 chmod a+rx
 	find docs/_build -type f -print0 | xargs -0 chmod a+r
@@ -84,7 +83,7 @@ dev: venv
 
 .PHONY: venv.update
 venv.update:
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	pip install -U pip
 	pip install -e .[dev,doc]
 
@@ -94,12 +93,20 @@ venv:
 	$(MAKE) venv.update
 
 $(MODULE).egg-info: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+	source venv/bin/activate
 	pip install -e .
 
+.PHONY: pub
+pub: venv/.pub
+
+venv/.pub: venv
+	source venv/bin/activate
+	pip install -e .[pub]
+	touch $@
+
 # generate source and built distribution
-dist: venv
-	[ "$(VENV)" ] && source $(VENV)/bin/activate
+dist: pub
+	source venv/bin/activate
 	$(PYTHON) -m build
 
 .PHONY: publish

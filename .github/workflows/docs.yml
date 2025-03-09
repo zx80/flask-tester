@@ -13,11 +13,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
       - name: Install dependencies
-        run: make VENV= venv.update
+        run: make dev
       - name: Check documentation syntax
-        run: make VENV= check.docs
+        run: make check.docs
       - name: Generate documentation
-        run: make VENV= docs
+        run: make docs
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
   # NOTE separate jobs because this one requires authn data

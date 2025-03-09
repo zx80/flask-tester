@@ -29,14 +29,14 @@ jobs:
         allow-prereleases: true
         cache: "pip"
     - name: Install Python Dependencies
-      run: make VENV= venv
+      run: make venv
     - name: Check with pyright
-      run: make VENV= check.pyright
+      run: make check.pyright
     - name: Check with ruff
-      run: make VENV= check.ruff
+      run: make check.ruff
     - name: Check with pytest
-      run: make VENV= check.pytest
+      run: make check.pytest
     - name: Check with coverage
-      run: make VENV= check.coverage
+      run: make check.coverage
     - name: Check with pymarkdown
-      run: make VENV= check.docs
+      run: make check.docs

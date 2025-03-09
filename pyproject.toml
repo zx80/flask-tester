@@ -35,13 +35,12 @@ package = "https://pypi.org/project/FlaskTester/"
 dev = [
   # static checks…
   "mypy", "pyright", "ruff", "coverage", "pymarkdownlnt!=0.9.5",
-  # packaging
-  "build", "twine", "wheel",
   # tests
   "types-flask", "types-requests", "FlaskSimpleAuth>=33.0", "bcrypt", "pydantic"
 ]
 # documentation generation
 doc = ["sphinx", "sphinx_rtd_theme", "sphinx-autoapi", "sphinx-lint", "myst_parser"]
+pub = ["build", "twine", "wheel"]
 
 [tool.setuptools]
 py-modules = [ "FlaskTester" ]
