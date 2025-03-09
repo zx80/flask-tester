@@ -16,6 +16,6 @@ USERS: list[str] = ["calvin", "hobbes", "susie", "moe"]
 
 # login -> clear-password
 PASSES: dict[str, str] = {
-    login: "".join(random.choice(PASS_CHARS) for _ in range(PASS_LENGTH))
+    login: "".join(random.choices(PASS_CHARS, k=PASS_LENGTH))
         for login in USERS
 }
