@@ -13,8 +13,9 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 
 ## ? on ?
 
-Slightly improve documentation.
 Add `setHook`.
+Activate _Pypy 3.11_ and _Python 3.14_ in GitHub CI.
+Slightly improve documentation.
 Add some tests.
 
 ## 4.3 on 2024-08-10
