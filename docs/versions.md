@@ -17,6 +17,7 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 Add `setHook`.
 Slightly improve documentation.
 Add some tests.
+Improve `Makefile`.
 
 ## 4.3 on 2024-08-10
 
