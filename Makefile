@@ -76,6 +76,12 @@ clean:
 clean.venv: clean
 	$(RM) -r venv *.egg-info
 
+.PHONY: clean.dev
+clean.dev: clean.venv
+
+.PHONY: dev
+dev: venv
+
 .PHONY: venv.update
 venv.update:
 	[ "$(VENV)" ] && source $(VENV)/bin/activate
