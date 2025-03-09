@@ -48,7 +48,6 @@ check.internal:
 .PHONY: check.coverage
 check.coverage:
 	$(MAKE) PYTEST="coverage run -a -m $(PYTEST)" check.internal
-	coverage html ../FlaskTester.py
 	coverage report --show-missing --precision=1 --fail-under=100.0
 
 .PHONY: check
