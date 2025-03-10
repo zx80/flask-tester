@@ -20,8 +20,11 @@ jobs:
         - version: "3.13"
         # 2025-03-09 KO on pydantic-core
         # - version: "3.14"
+    # env:
+    #   PYTHON_GIL: ${{ matrix.python.gil }}
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Project
+      uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python.version }}
       uses: actions/setup-python@v5
       with:
