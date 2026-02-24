@@ -13,6 +13,10 @@ please report any [issues](https://github.com/zx80/flask-tester/issues).
 - activate _Pypy 3.11_ and _Python 3.14_ in GitHub CI.
 - mkdocs? docsify?
 
+## ? on ?
+
+- count api calls internally, and show an info at the end
+
 ## 5.1 on 2025-11-22
 
 - use SPDX licensing format.

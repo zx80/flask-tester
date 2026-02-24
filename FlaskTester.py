@@ -315,6 +315,7 @@ class Client:
     AuthHook = Callable[[Any, str, str|None], None]  # type: ignore
 
     def __init__(self, auth: Authenticator, default_login: str|None = None):
+        self._calls = 0
         self._auth = auth
         self._cookies: dict[str, dict[str, str]] = {}  # login -> name -> value
         self._default_login = default_login
@@ -356,6 +357,8 @@ class Client:
         :param auth: Authentication scheme to use instead of default behavior.
         :param **kwargs: More request parameters (headers, data, json…).
         """
+
+        self._calls += 1
 
         if "login" in kwargs:
             login = kwargs["login"]
@@ -447,6 +450,12 @@ class Client:
     def delete(self, path: str, status: int|None = None, content: str|None = None, **kwargs):
         """HTTP DELETE request, see `Client.request`."""
         return self.request("DELETE", path, status=status, content=content, **kwargs)
+
+    def __str__(self):
+        return f"client calls: {self._calls}"
+
+    def __del__(self):
+        log.info(f"ending, {self}")
 
 
 class RequestClient(Client):
