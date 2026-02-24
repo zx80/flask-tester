@@ -110,6 +110,8 @@ def api(ft_client):
     assert res.json["user"] == "calvin"
     # ready for testing routes
     yield ft_client
+    # trigger display and delete execution, otherwise it is unreliable
+    ft_client.__del__()
 
 def test_admin(api):
     # check authentication schemes
